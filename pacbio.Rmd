@@ -1,0 +1,1114 @@
+---
+title: "pacbio_genomes"
+author: "Mary English"
+date: "6/6/2022"
+output: html_document
+---
+Process of using canu to align PacBio reads from June 2022, then annotating them with bakta.
+
+Using canu: ASW1
+```{bash}
+/local/cluster/canu-2.2/bin/canu -d /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed -p ASW1 genomeSize=5.0m -pacbio-hifi useGrid=false  correctedErrorRate=0.040 /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/ASW1.fastq
+```
+46 contigs - looks like 1 or maybe 2 main ones. Going to make a bowtie map to see if the rest of the contigs map onto the main one.
+
+JANUARY 2024: redoing Bakta.
+```{bash}
+# within bakta_asw1_redo.sh
+#!/usr/bin/env bash
+cd /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/redo_annotation
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/conda-envs/envs/bakta/activate.sh
+/local/cluster/bin/bakta --prefix asw1 --keep-contig-headers --genus Alteromonas --output /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/redo_annotation/annots --force  --threads 40 /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/ASW1_final.fna
+
+bash /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/bakta_dm14_redo.sh
+```
+
+FastANI
+First, download genomes.
+Taxon IDs, names, and counts (in descending order) | Full genomes
+43660 Pseudoalteromonas undina	48 | 3
+43659 Pseudoalteromonas tetraodonis	20 | 7
+162157 Pseudoalteromonas spiralis	14 | 1
+152297 Pseudoalteromonas issachenkonii	13 | 3
+227 Pseudoalteromonas carrageenovora	2 | 11
+77608 Pseudoalteromonas distincta	2 | 9
+176102 Pseudoalteromonas agarivorans	1 | 7
+247523 Pseudoalteromonas aliena	1 | 3
+874454 Pseudoalteromonas arabiensis	1 | 1
+288 Pseudoalteromonas atlantica	1 | 1
+621376 Pseudoalteromonas donghaensis	1 | 1
+28107 Pseudoalteromonas espejiana	1 | 2
+1872678 Pseudoalteromonas fuliginea	1 | 5
+570156 Pseudoalteromonas lipolytica	1 | 9
+267375 Pseudoalteromonas marina	1 | 8
+1840331 Pseudoalteromonas neustonica	1 | 2
+162160 Pseudoalteromonas telluritireducens	1 | 1
+1265309 Tritonibacter mobilis F1926 (formerly Epibacterium mobile, an outgroup)
+
+18 total taxa
+
+```{bash}
+nano datasets.sh
+
+mkdir p_undina
+mkdir p_tetroadonis
+mkdir p_spiralis
+mkdir p_issachenkonii
+mkdir p_carrageenovora
+mkdir p_distincta
+mkdir p_agarivorans
+mkdir p_aliena
+mkdir p_arabiensis
+mkdir p_atlantica
+mkdir p_donghaensis
+mkdir p_espejiana
+mkdir p_fuliginea
+mkdir p_lipolytica
+mkdir p_marina
+mkdir p_neustonica
+mkdir p_telluritireducens
+mkdir t_mobilis
+
+datasets download genome taxon 43660 --include genome --filename p_undina/p_undina.zip
+datasets download genome taxon 43659 --include genome --filename p_tetroadonis/p_tetroadonis.zip
+datasets download genome taxon 162157 --include genome --filename p_spiralis/p_spiralis.zip
+datasets download genome taxon 152297 --include genome --filename p_issachenkonii/p_issachenkonii.zip
+datasets download genome taxon 227 --include genome --filename p_carrageenovora/p_carrageenovora.zip
+datasets download genome taxon 77608 --include genome --filename p_distincta/p_distincta.zip
+datasets download genome taxon 176102 --include genome --filename p_agarivorans/p_agarivorans.zip
+datasets download genome taxon 247523 --include genome --filename p_aliena/p_aliena.zip
+datasets download genome taxon 874454 --include genome --filename p_arabiensis/p_arabiensis.zip
+datasets download genome taxon 288 --include genome --filename p_atlantica/p_atlantica.zip
+datasets download genome taxon 621376 --include genome --filename p_donghaensis/p_donghaensis.zip
+datasets download genome taxon 28107 --include genome --filename p_espejiana/p_espejiana.zip
+datasets download genome taxon 1872678 --include genome --filename p_fuliginea/p_fuliginea.zip
+datasets download genome taxon 570156 --include genome --filename p_lipolytica/p_lipolytica.zip
+datasets download genome taxon 267375 --include genome --filename p_marina/p_marina.zip
+datasets download genome taxon 1840331 --include genome --filename p_neustonica/p_neustonica.zip
+datasets download genome taxon 162160 --include genome --filename p_telluritireducens/p_telluritireducens.zip
+datasets download genome taxon 1265309 --include genome --filename t_mobilis/t_mobilis.zip
+```
+Put all of these files into a list.
+```{bash}
+nano unzip.sh
+unzip p_undina/p_undina.zip
+unzip p_tetroadonis/p_tetroadonis.zip
+unzip p_spiralis/p_spiralis.zip
+unzip p_issachenkonii/p_issachenkonii.zip
+unzip p_carrageenovora/p_carrageenovora.zip
+unzip p_distincta/p_distincta.zip
+unzip p_agarivorans/p_agarivorans.zip
+unzip p_aliena/p_aliena.zip
+unzip p_arabiensis/p_arabiensis.zip
+unzip p_atlantica/p_atlantica.zip
+unzip p_donghaensis/p_donghaensis.zip
+unzip p_espejiana/p_espejiana.zip
+unzip p_fuliginea/p_fuliginea.zip
+unzip p_lipolytica/p_lipolytica.zip
+unzip p_marina/p_marina.zip
+unzip p_neustonica/p_neustonica.zip
+unzip p_telluritireducens/p_telluritireducens.zip
+unzip t_mobilis/t_mobilis.zip
+```
+
+Making a list of full comparisons, running fastANI. Genomelist.txt was made in excel and it's an absolute path to every GCA_... fna file.
+```{bash}
+nano genomelist.txt
+/local/cluster/bin/fastANI --queryList /nfs5/Mueller_Lab/mk/oyster_probiotics/dm14_comps/genomelist.txt --refList /nfs5/Mueller_Lab/mk/oyster_probiotics/dm14_comps/genomelist.txt -t 10 --visualize -o dm14_comps.txt
+```
+Issue - some of the comparisons don't have 80% ANI to anything, so they do not have the proper number of comparisons. this is messing up the matrix.
+
+All-vs-all matrix.
+```{r}
+# got rid of GCA_000376545.2 in the dataframe; fastANI can't compute the outgroup lol. Which is good, it did its job
+fastani_df <- read.csv("~/Documents/Oyster_Project/genomes/pseudoalteromonas/comps/dm14_fastani.csv", header = T, row.names = 1)
+fastani_df <- fastani_df[,c(2,4,5)]
+# get rid of several that NCBI says are trash
+remove <- c("P_atlantica_NRBC103033", "P_marina_AH700O07","P_tetraodonis_HN18.BIN.15", "P_tetraodonis_HN13.BIN.11")
+fastani_df <- fastani_df[!((fastani_df$genome1_id) %in% remove),]
+fastani_df <- fastani_df[!((fastani_df$genome2_id) %in% remove),]
+class(fastani_df)
+fastani_hm <- data.frame(pivot_wider(fastani_df, names_from = genome1_id, values_from = pct_id))
+rownames(fastani_hm) <- fastani_hm$genome2_id
+fastani_hm <- fastani_hm[,-1] # get rid of extra column
+class(fastani_hm)
+# 72 good genomes including DM14
+fastani_mx <- as.matrix(fastani_hm)
+
+jpeg(filename = "~/Documents/Oyster_Project/genomes/pseudoalteromonas/comps/heatmap.jpeg", width = 1000, height = 1000, units = "px")
+gplots::heatmap.2(fastani_mx, density.info = "none", trace = "none", dendrogram = "none", col = hcl.colors(n = 100, palette = "Cividis"), cexRow = 0.5, cexCol = 0.5, margins = c(10,10))
+dev.off()
+while (!is.null(dev.list()))  dev.off()
+
+ggplot(fastani_hm)+geom_tile()
+```
+
+
+
+
+It seems that Canu has suggested that the part to be trimmed off is actually the origin of repliation. To fix this, going to use minimap to map the raw pacbio reads with splits, then I can decide where to actually cut it.
+```{bash}
+
+./minimap2 -ax map-hifi ref.fa pacbio-ccs.fq.gz > aln.sam # template
+
+
+# this creates just a header file
+/local/cluster/bin/minimap2 -ax map-hifi -H -t 40 -d /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/bakta/dm14.fna  /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/DM14.fastq > dm14_mini_aln.sam
+qrsh -q micro -pe thread 20
+
+# Need to create index - this is technically optional but the next command doesn't run if ommitted.
+/local/cluster/bin/minimap2 -d dm14.mmi /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/bakta/dm14.fna
+ 
+# on Batch
+/local/cluster/bin/minimap2 -ax map-hifi dm14.mmi /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/DM14.fastq > /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/bakta/dm14_mini_aln.sam
+
+# Convert to bam, sort, make index
+samtools view -b dm14_mini_aln.sam > dm14_mini_aln.bam
+samtools sort -o dm14_mini_aln_sort.bam dm14_mini_aln.bam
+samtools index dm14_mini_aln_sort.bam
+```
+
+Minimap2 on just the origin region of DM14.fna to find a read that spans 3,339,781 - 10,754. Origin that is extracted for this has 60k on either side of these two points for a total of 141,511 bp.
+```{bash}
+pwd
+/nfs5/Mueller_Lab/oyster_probiotics/pacbio/bakta/minimap_origin
+/local/cluster/bin/minimap2 -d dm14_origin.mmi /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/bakta/minimap_origin/dm14_origin_60k.fna
+/local/cluster/bin/minimap2 -ax map-hifi dm14_origin.mmi /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/DM14.fastq > /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/bakta/minimap_origin/dm14_origin_mini_aln.sam
+samtools view -b -F 4 dm14_origin_mini_aln.sam > dm14_origin_mini_aln.bam # only keeping mapped reads with -F 4 flag, 4 is the unmapped/mapped field
+samtools sort -o dm14_origin_mini_aln_sort.bam dm14_origin_mini_aln.bam
+samtools index dm14_origin_mini_aln_sort.bam
+```
+
+
+
+This produces a .sam file consisting of only a single header line.
+
+
+HMMsearch for LuxS.
+
+Searching for the Prr gene. Have two fasta files, one of each prr gene.
+```{bash}
+# search within DM14's old assembly. copy-pasted luxs's raw alignment into luxS_align.aln
+cd /nfs5/Mueller_Lab/mk/oyster_probiotics/dm14_comps/luxS
+/local/cluster/hmmer/bin/hmmbuild luxS_homologs.hmm luxS_align.aln
+/local/cluster/hmmer/bin/hmmpress luxS_homologs.hmm
+# on dm14; no hits
+/local/cluster/hmmer/bin/hmmsearch --tblout luxS_homologs.out luxS_homologs.hmm /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/bakta/dm14.faa
+# on d16; no hits
+/local/cluster/hmmer/bin/hmmsearch --tblout luxS_homologs.out luxS_homologs.hmm /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/annotation/reannots/d16.faa
+# on asw1; should have one hit, and it does.
+/local/cluster/hmmer/bin/hmmsearch --tblout luxS_homologs.out luxS_homologs.hmm /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/redo_annotation/annots/asw1.faa
+#b11; nope
+/local/cluster/hmmer/bin/hmmsearch --tblout luxS_homologs.out luxS_homologs.hmm /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/annotation/annots/b11.faa
+```
+
+An all-vs-all blast search to determine which genes D16 has that DM14 doesn't, and vice versa.
+
+```{bash}
+qrsh -q makaira -pe thread 20
+cd /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/bakta
+# dm14 vs d16
+makeblastdb -in /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/bakta/dm14.faa -dbtype prot -out dm14_old_db
+blastp -db /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/bakta/dm14_old_db -query /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/annotation/reannots/d16.faa -out d16_against_dm14.out -evalue 1e-10 -outfmt 6 -num_threads 20
+# Sort and get unique by bit score
+sort -u -g -k12,12 d16_against_dm14.out | uniq -f1 -u > d16_against_dm14_top.out
+
+# d16 vs dm14
+makeblastdb -in /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/annotation/reannots/d16.faa -dbtype prot -out d16_db
+blastp -db /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/bakta/d16_db -query /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/bakta/dm14.faa -out dm14_against_d16.out -evalue 1e-10 -outfmt 6 -num_threads 20
+sort -u -g -k12,12 dm14_against_d16.out | uniq -f1 -u > dm14_against_d16_top.out
+```
+
+
+
+
+Looking at mortality of all strains.
+```{r}
+efficacy_data <- read.csv("~/Documents/Oyster_Project/genomes/efficacy_data_for_r.csv", header = T)
+efficacy_data$Num_strains <- factor(efficacy_data$Num_strains, levels = c("0", "1", "2", "3", "4"))
+
+ggplot(data = efficacy_data, aes(x = reorder(Treatment,-pct_alive), y = pct_alive))+
+  geom_boxplot(aes(fill = Num_strains))+
+  theme(panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(color = "black", fill = NA),
+        panel.grid.major.y = element_line(color = "gray90"),
+        panel.grid.minor.y = element_line(color = "gray90"),
+        panel.grid.major.x = element_line(color = "gray90", linewidth = 0),
+        panel.grid.minor.x = element_line(linewidth = 0),
+        axis.text.x = element_text(color = "black", angle = 90, hjust = 1, vjust = 0.25),
+        axis.text.y = element_text(color = "black"),
+        legend.key = element_rect(fill = NA),
+        plot.caption.position = "plot",
+        plot.title = element_text(hjust = 0.5),
+        strip.background = element_rect(fill = "white", color = "black", linetype = "solid"))+
+  labs(x = NULL, y = "Percent of larvae alive", title = "Experiment 48: cocktail tests", caption = "n = 6 reps per treatment\nProbiotics added 24hpf\nVcor added 48hpf\n48-hour trial", fill = "# probiotic strains")+
+  scale_fill_manual(values = mkePalette_5)
+
+mkePalette_5 <- c("gray40", "#FDE725FF", "#3CBB75FF", "#2D708EFF",  "#481567FF")
+
+```
+Scatterplot of this.
+```{r}
+ggplot(data = efficacy_data, aes(x = reorder(Treatment,-pct_alive), y = pct_alive))+
+  geom_point(aes(color = Num_strains), position = "jitter")+
+  theme(panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(color = "black", fill = NA),
+        panel.grid.major.y = element_line(color = "gray90"),
+        panel.grid.minor.y = element_line(color = "gray90"),
+        panel.grid.major.x = element_line(color = "gray90", linewidth = 0),
+        panel.grid.minor.x = element_line(linewidth = 0),
+        axis.text.x = element_text(color = "black", angle = 90, hjust = 1, vjust = 0.25),
+        axis.text.y = element_text(color = "black"),
+        legend.key = element_rect(fill = NA),
+        plot.caption.position = "plot",
+        plot.title = element_text(hjust = 0.5),
+        strip.background = element_rect(fill = "white", color = "black", linetype = "solid"))+
+  labs(x = NULL, y = "Percent of larvae alive", title = "Experiment 48: cocktail tests", caption = "n = 6 reps per treatment\nProbiotics added 24hpf\nVcor added 48hpf\n48-hour trial", fill = "# probiotic strains")+
+  scale_color_manual(values = mkePalette_5)
+```
+
+
+
+
+Just want to focus on 2nd chromosome.
+```{bash}
+cd ncbi_dataset/data/GCA_000238275.4
+/local/cluster/bin/fastANI --query /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/fur_region/dm14_fur_region.fna --ref /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/ncbi_dataset/data/GCA_000238275.4/GCA_000238275.4_Pund_v2.0_genomic.fna --visualize -o dm14_fur_vs_GCA_000238275.4.txt
+```
+
+
+Coordinates of DM14_2 i want: 42,246 - 51,634 (about 9400 bases)
+I have extracted this and added it as an .fna file.
+I have trimmed the .tsv file so that there is now a corresponding tsv file for the fna file.
+Blast - make a blast database of all the P. undina genomes.
+```{bash}
+cat GCA_000238275.4/GCA_000238275.4_Pund_v2.0_genomic.fna GCA_001298405.1/GCA_001298405.1_ASM129840v1_genomic.fna GCA_014897915.1/GCA_014897915.1_ASM1489791v1_genomic.fna > undina_seqs.fa
+
+makeblastdb -in /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_seqs.fa -dbtype nucl -out undina_db
+
+# doesn't work, something about the database format:  blastall -p blastn -i /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/DM14_final.fna -d /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_db -o dm14_fur_vs_undina.out -e 1e-10 -m 8 -b 1
+```
+Need to be using AMINO ACIDS to compare identity. this goes for the P. undina database and the DM14_2 chromosome.
+```{bash}
+#cat /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/ncbi_dataset/data/GCA_000238275.4/protein.faa  /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/ncbi_dataset/data/GCA_001298405.1/protein.faa /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/ncbi_dataset/data/GCA_014897915.1/protein.faa > undina_seqs.faa
+
+# Make each its own database!
+makeblastdb -in /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/ncbi_dataset/data/GCA_000238275.4/GCA_000238275.4_Pund_v2.0_genomic.fna -dbtype nucl -out undina_dsm6065_db
+makeblastdb -in /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/ncbi_dataset/data/GCA_001298405.1/protein.faa -dbtype prot -out undina_ucdsed8_db
+makeblastdb -in /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/ncbi_dataset/data/GCA_014897915.1/protein.faa  -dbtype prot -out undina_fme67_db
+
+
+#makeblastdb -in /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_seqs.faa -dbtype prot -out undina_db
+# now get the faas of the second chromosome
+grep -n "DM14_2" dm14.tsv | head # first one: "KAMFLA_15695"
+grep -n "KAMFLA_15695" dm14.ffn # line 6277
+tail -n +6277 dm14.ffn > /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/dm14_2.fna
+
+# blasting each against DM14s second chromosome
+blastp -db /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_dsm6065_db -query /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/dm14_2.faa -out dm14_vs_dsm6065.out -evalue 1e-10 -outfmt 6
+# sort it by bit score
+sort -k1,1 -k12,12nr dm14_vs_dsm6065.out | sort -u -k1,1 -m > dm14_vs_dsm6065.sort.out
+# sort query first
+# sort bit score numerically and reverse
+# get unique column 1 values
+# sort by query
+# merge already sorted files into a sorted output
+
+blastp -db /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_ucdsed8_db -query /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/dm14_2.faa -out dm14_vs_ucdsed8.out -evalue 1e-10 -outfmt 6
+# sort it
+
+blastp -db /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_fme67_db -query /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/dm14_2.faa -out dm14_vs_fme67.out -evalue 1e-10 -outfmt 6
+# sort it
+
+
+#awk -F "\t" '{print $2}' dm14_vs_undina.out | uniq | wc -l # 50 subject hits to the query
+
+# a lot of these hits are super short; need to filter to be like 5000 minimum
+awk '{ if ($4 >= 9000) { print } }' dm14_vs_undina.out > dm14_vs_undina.filtered.out
+
+# These need to be split into their respective hits
+awk '$2 ~ /LITK01000002.1/' dm14_vs_undina.filtered.out > ucd-sed8_GCA_001298405.1.out
+awk '$2 ~ /JABWDP010000017.1/' dm14_vs_undina.filtered.out > fme67_GCA_014897915.1.out
+awk '$2 ~ /AHCF03000004.1/' dm14_vs_undina.filtered.out > dsm6065_GCA_000238275.4.out
+```
+Ok this has created a list of 68 hits. When I zoom in on the part of DM14_2 that I want, I am able to narrow this down to 3 loci.
+
+DM14_2	JABWDP010000017.1	97.625	 29,219 	654	14	 28,124 	 57,337 	 83,138 	 53,955 	0.00E+00	50076 <- GCA_014897915.1
+DM14_2	LITK01000002.1	97.619	 28,940 	663	18	 28,125 	 57,054 	 584,811 	 555,888 	0.00E+00	49602 <- GCA_001298405.1
+DM14_2	AHCF03000004.1	97.77	 21,254 	461	9	 28,128 	 49,375 	 25,896 	 47,142 	0.00E+00	36610 <- GCA_000238275.4; within Pseudoalteromonas_undina_DSM60652.gb
+
+These are the only 3 hits that contain the fur region.
+
+Since the genoPlotR package requires only 1 locus per genbank file, i need to select out the locus that has the hit.
+
+Make new .gbff files for these, of only one locus. Can do this manually on my computer.
+
+```{bash}
+awk '{f="Pseudoalteromonas_undina_DSM6065_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/ncbi_dataset/data/GCA_000238275.4/genomic.gbff
+# to find the contig.gb contiaining the subject ID you want
+grep "AHCF03000004.1"
+# Pseudoalteromonas_undina_DSM6065_2.gb
+```
+Now breaking DM14 into a single .gb locus:
+```{bash}
+awk '{f="DM14_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/dm14.gbff
+```
+So now the corresponding gb file is DM14_3.gb.
+
+Okay I should have everything I need
+```{r}
+Ref <- read_dna_seg_from_file(file="~/Documents/Oyster_project/genomes/pseudoalteromonas/fastANI_comps/Pseudoalteromonas_undina_DSM6065_2.gb", fileType="genbank", tagsToParse="CDS", gene_type="arrows")
+Ref$name <- Ref$proteinid
+#Query$synonym <- Query$proteinid
+Query <- read_dna_seg_from_file(file="~/Documents/Oyster_project/genomes/pseudoalteromonas/fastANI_comps/DM14_3.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Documents/Oyster_project/genomes/pseudoalteromonas/fastANI_comps/dm14_vs_dsm6065.sort.out")
+
+pdf(file = "~/Desktop/testmap.pdf")
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), dna_seg_scale=TRUE, main = "DM14 vs. P. undina DSM 6065", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"), xlims=list(c(0,10000), c(0,10000))) # c(query start, query end) then subj
+```
+This is giving a huge red block, not small individual genes. I'm going to see if a different blast option labels the regions of similarity differently.
+
+
+February 2024
+1. Make .fna file of DM14 genes.
+```{bash}
+grep -n "DM14_2" dm14.tsv | head # first one: "KAMFLA_15695"
+grep -n "KAMFLA_15695" dm14.ffn # line 6277
+grep -A 1 -B 1 -n "KAMFLA_15695" /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/dm14.ffn
+tail -n +6277 /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/dm14.ffn > /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/dm14_2.fna
+```
+
+2. Run nucleotide BLAST where the query is DM14_genes.fna (a file containing gene entries of the second chromosome). The reference/subject is a nucleotide multifasta contig file (.fa) of the P. undina genome.
+
+```{bash}
+# Make each its own database!
+# run from undina_genomes folder
+makeblastdb -in /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/ncbi_dataset/data/GCA_000238275.4/GCA_000238275.4_Pund_v2.0_genomic.fna -dbtype nucl -out undina_dsm6065_db
+makeblastdb -in /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/ncbi_dataset/data/GCA_001298405.1/GCA_001298405.1_ASM129840v1_genomic.fna -dbtype nucl -out undina_ucdsed8_db
+makeblastdb -in /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/ncbi_dataset/data/GCA_014897915.1/GCF_014897915.1_ASM1489791v1_genomic.fna -dbtype nucl -out undina_fme67_db
+blastn -db /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/undina_dsm6065_db -query /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/dm14_2.fna -out dm14_vs_dsm6065.out -evalue 1e-10 -outfmt 6
+blastn -db /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/undina_ucdsed8_db -query /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/dm14_2.fna -out dm14_vs_ucdsed8.out -evalue 1e-10 -outfmt 6
+blastn -db /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/undina_fme67_db -query /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/dm14_2.fna -out dm14_vs_fme67.out -evalue 1e-10 -outfmt 6
+```
+
+3. Look at the output file -- find the correct chromosome in the contig file.
+```{bash}
+# For dsm6065: AHCF03000004.1
+samtools faidx /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/ncbi_dataset/data/GCA_000238275.4/GCA_000238275.4_Pund_v2.0_genomic.fna AHCF03000004.1 > dsm6065_chrom.fa
+
+# For ucdsed8: LITK01000002.1
+samtools faidx /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/ncbi_dataset/data/GCA_001298405.1/GCA_001298405.1_ASM129840v1_genomic.fna LITK01000002.1 > ucdsed8_chrom.fa
+
+# for fme67: NZ_JABWDP010000012.1
+samtools faidx /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/ncbi_dataset/data/GCA_014897915.1/GCF_014897915.1_ASM1489791v1_genomic.fna NZ_JABWDP010000012.1 > fme67_chrom.fa
+```
+
+4. Re-run another blast where the query is the same and the subject is the .fa file of the correct subject chromosome
+```{bash}
+mkdir undina_blast2
+#dsm6065
+makeblastdb -in /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/dsm6065_chrom.fa -dbtype nucl -out undina_dsm6065_2db
+blastn -db /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/undina_blast2/undina_dsm6065_2db -query /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/dm14_2.fna -out dm14_vs_dsm6065_2.out -evalue 1e-10 -outfmt 6
+#ucdsed8
+makeblastdb -in /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/ucdsed8_chrom.fa -dbtype nucl -out undina_ucdsed8_2db
+blastn -db /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/undina_blast2/undina_ucdsed8_2db -query /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/dm14_2.fna -out dm14_vs_ucdsed8_2.out -evalue 1e-10 -outfmt 6
+#fme67
+makeblastdb -in /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/fme67_chrom.fa -dbtype nucl -out undina_fme67_2db
+blastn -db /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/undina_blast2/undina_fme67_2db -query /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/dm14_2.fna -out dm14_vs_fme67_2.out -evalue 1e-10 -outfmt 6
+```
+
+5. Run coordinate adjustment command on the output file. Required arguments: $1 = gff file, $2 = m8 BLAST output, $3 = % alignment threshold [0 - 1.0]"
+  a. Make sure there is a .gff file for ONLY the second chromosome of DM14.
+```{bash}
+# make a gff3 file for dm14_2: /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/dm14_2.gff3
+# did this manually; kept header, got rid of DM14_1 entries and both fasta files at end
+#script location: /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/m8_coord_adj.rb
+ruby m8_coord_adj.rb /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/dm14_2.gff3 /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/undina_blast2/dm14_vs_dsm6065_2.out 0.00001 > dm14_vs_dsm6065_2.out.adj
+```
+FCFFPC_15990 = KAMFLA_15890 (43305)
+FCFFPC_16020 = KAMFLA_15920 (51634)
+Aight let's see if this worked
+```{r}
+Ref <- read_dna_seg_from_file(file="~/Documents/Oyster_project/genomes/pseudoalteromonas/comps/Pseudoalteromonas_undina_DSM6065_2.gb", fileType="genbank", tagsToParse="CDS", gene_type="arrows")
+#Ref$name <- Ref$proteinid
+#Query$synonym <- Query$proteinid
+Query <- read_dna_seg_from_file(file="~/Documents/Oyster_project/genomes/pseudoalteromonas/comps/DM14_3.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Documents/Oyster_project/genomes/pseudoalteromonas/comps/dm14_vs_dsm6065_2.out.adj")
+
+pdf(file = "~/Desktop/testmap.pdf")
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), dna_seg_scale=TRUE, main = "DM14 vs. P. undina DSM 6065", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"), xlims=list(c(42246,51634), c(40013,50352))) # c(query start, query end) then subj 42,246 - 51,634
+```
+
+
+
+
+
+
+I am going to run BLAST on a single p.undina genome: GCA_000238275.4
+
+Start by making the BLAST database.
+
+```{bash}
+for f in undina_query_list.txt; do makeblastdb -in $f -dbtype dna -out $(basename $f .fna); done
+makeblastdb -in undina_query_list.txt -out undina_db
+```
+
+```{bash}
+Format: 
+for f in *.pin; do blastall -p blastp -i region3_1.faa -d $(basename $f .pin) -m 8 -b 1 -o B11_region3_1$(basename $f .pin).out; done
+# f = genome.fna
+for f in undina_query_list.txt, do blastall -p blastn -i 
+/nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/redo_annotation/annots/fur_region/dm14_fur_region.fna -d /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_db -o GCA_000238275.4.out -e 1e-10 -m 8 -b 1
+
+```
+
+```{r}
+library(genoPlotR)
+Query <- read_dna_seg_from_file(file="~/Documents/Oyster_project/genomes/pseudoalteromonas/fastANI_comps/undina_ucd-sed8/output.gb", fileType="genbank", tagsToParse="CDS", gene_type="arrows")
+Ref <- read_dna_seg_from_file(file="~/Documents/Oyster_project/comp_genome/Epibacterium_mobile_F1926/Epibacterium_mobile_F1926_2.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Documents/Oyster_project/comp_genome/Epibacterium_mobile_F1926/B11_region3_1_v_Epibacterium_mobile_F1926.adj")
+```
+Trying to convert to gbk file with seqret.
+```{bash}
+/local/cluster/bin/seqret -feature /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/fast_comps/undina_genomes/ncbi_dataset/data/GCA_001298405.1/GCA_001298405.1_ASM129840v1_genomic.fna GCA_001298405.1_ASM129840v1.gbk -sformat fasta -osformat genbank
+```
+
+```{bash}
+awk '{f="Epibacterium_mobile_F1926_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' GCA_001298405.1_ASM129840v1.gbk
+```
+
+
+```{r}
+library(genoPlotR)
+Query <- read_dna_seg_from_file(file="~/Documents/Oyster_project/genomes/pseudoalteromonas/fastANI_comps/GCA_000238275.4_copy.gbff", fileType="genbank", tagsToParse="CDS", gene_type="arrows")
+Ref <- read_dna_seg_from_file(file="~/Documents/Oyster_project/genomes/pseudoalteromonas/fastANI_comps/dm14.embl", fileType="embl", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Documents/Oyster_project/genomes/pseudoalteromonas/fastANI_comps/dm14_fur_vs_GCA_000238275.4.txt") 
+
+#set xlims based on m8 BLAST max/mins (defined in coordinate_info.txt file created above)
+pdf(file = "testmap.pdf")
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(2416000,2482000)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F1926", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+# lims: start and end pos for displayed region. second set of vals changes +-10k
+```
+
+
+
+Start by splitting tigs; chromosome 1 is already its own thing (ASW1_chromosome.fasta)
+```{bash}
+/local/cluster/bowtie2/bowtie2-build /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/ASW1_chromosome.fasta /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/pacbio/bowtie_maps/asw1_bowtie_db
+
+sed -n '/>tig00000006/,$p' ASW1.contigs.fasta > asw1_other_tigs.fasta # making the other contigs into a fasta file
+
+bowtie2 -f -p 20 -x /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/pacbio/bowtie_maps/asw1_bowtie_db -U /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/asw1_other_tigs.fasta -S /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/asw1_align.sam
+```
+
+45 reads; of these:
+  45 (100.00%) were unpaired; of these:
+    0 (0.00%) aligned 0 times
+    45 (100.00%) aligned exactly 1 time
+    0 (0.00%) aligned >1 times
+100.00% overall alignment rate (so they mapped onto the main chromosome)
+
+Now to visualize in Tablet.
+```{bash}
+# Convert sam to bam for Tablet viewer
+/local/cluster/bin/samtools view -S -b /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/asw1_align.sam > /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/asw1_align.bam
+#Sort
+/local/cluster/bin/samtools sort /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/asw1_align.bam -o /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/asw1_align_sort.bam
+#Need an index alignment
+/local/cluster/bin/samtools index /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/asw1_align_sort.bam
+```
+Yes, they're all there. So we should have a complete genome!
+
+
+Origin of replication predicted to be 2,878,736 - 2,879,305 nt, per TUBIC ori-finder 2022
+This section is missing below in the GFF.
+
+>tig00000001	Prodigal:002006	CDS	2877218	2878735	.	-	0	ID=n_02622;Name=dnaA_1;db_xref=COG:COG0593;gene=dnaA_1;inference=ab initio prediction:Prodigal:002006,similar to AA sequence:UniProtKB:P03004;locus_tag=n_02622;product=Chromosomal replication initiator protein DnaA
+
+>tig00000001	Prodigal:002006	CDS	2879306	2879440	.	+	0	ID=n_02623;Name=rpmH;db_xref=COG:COG0230;gene=rpmH;inference=ab initio prediction:Prodigal:002006,similar to AA sequence:UniProtKB:A2RHL6;locus_tag=n_02623;product=50S ribosomal protein L34
+
+Now need to fix coordinates, such that everything starts at origin. Did so manually in Geneious by moving 287736-end to the beginning.
+
+
+cut out bases from 718 to 724, compare to known origins of Pseudos from doric.
+Extract all oriCs, do a MSA of all the origins against your 6k segment. 
+Use minimap instead of bowtie2.
+
+
+ASW1 december 2023
+Made fastalist.txt with tig 1 and tig 6 in it.
+```{bash}
+/local/cluster/bin/seqtk subseq ASW1.contigs.fasta fastalist.txt > asw1_chroms.fa
+```
+asw1_chroms.fa trimmed for redundancy (tig1 only). then exported to Ori-Finder to adjust origin.
+
+origin is at 2868938-2869507 nt.
+Cut from 2,868,938-end, place in front of 1-2,868,937.
+
+Hmm, that didn't work -- it moved the origin from 1,550-2,120. Trying again by moving 1-1,549 to the end.
+
+Now for DM14.
+dm14
+```{bash}
+/local/cluster/canu-2.2/bin/canu -d /nfs5/Mueller_Lab/sequence_databases/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14 -p DM14 genomeSize=5.0m -pacbio-hifi useGrid=false  correctedErrorRate=0.040 /nfs5/Mueller_Lab/sequence_databases/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/DM14.fastq
+
+/local/cluster/mueller/scripts/get_assembly_stats.py DM14.contigs.fasta
+```
+Scaffolds > 500nt
+Number	14
+Total Length	4428788
+N50	3350537
+Avg	316342.0
+Median	23977.0
+Max	3350537
+Min	19852
+Select out the chromosomes (2)
+```{bash}
+# where fastalist is >tig00000001 \n >tig00000006
+/local/cluster/bin/seqtk subseq DM14.contigs.fasta fastalist.txt > dm14.fa
+# renaming the two contigs
+awk '/^>/{print ">DM14_" ++i; next}{print}' dm14.fa > dm14_renamed.fa
+```
+>tig00000001 len=3350537 reads=44299 class=contig suggestRepeat=no suggestBubble=no suggestCircular=yes trim=10755-3339781
+>tig00000006 len=791720 reads=9358 class=contig suggestRepeat=no suggestBubble=no suggestCircular=no trim=0-791720
+
+The two OriC's are at:
+1 => 718144	- 718569 (426bp)
+2 => 34542	- 35311 (770bp)
+Use geneious to adjust the chromosomes' start and end points.
+
+December 2022: Bakta, not prokka, is the most up-to-date way to annotate bacterial genomes. Did DM14 in the process of analyzing transcriptome data. 
+```{bash}
+# Script to run bakta:
+# /nfs5/Mueller_Lab/oyster_probiotics/pacbio/bakta/bakta_dm14.sh
+# with ADJUSTED DM14 OriC coordinates for both chromosomes
+cd /nfs5/Mueller_Lab/oyster_probiotics/pacbio/bakta
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/bakta/activate.sh 
+/local/cluster/bin/bakta --prefix dm14 --keep-contig-headers --genus Pseudoalteromonas /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/dm14_renamed_adj.fna
+```
+
+MMSeqs - reannotates protein sequences, compares against existing database (swissprot). Reveals a lot of very small virus contigs.
+MMSeqs taxonomy options
+> --orf-filter INT                 Prefilter query ORFs with non-selective search
+                                  Only used during nucleotide-vs-protein classification
+                                  NOTE: Consider disabling when classifying short reads [1]
+> --lca-mode INT                   LCA Mode 1: single search LCA , 2/3: approximate 2bLCA, 4: top hit [3]
+> --majority FLOAT                 minimal fraction of agreement among taxonomically assigned sequences of a set [0.500]
+> --vote-mode INT                  Mode of assigning weights to compute majority. 0: uniform, 1: minus log E-value, 2: score [1]
+> --tax-lineage INT                0: don't show, 1: add all lineage names, 2: add all lineage taxids [0]
+
+
+DM14 MMseqs
+```{bash}
+/local/cluster/bin/mmseqs createdb /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/DM14.contigs.fasta /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/dm14_mmseqs_db
+
+/local/cluster/bin/mmseqs taxonomy /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/dm14_mmseqs_db /nfs5/Mueller_Lab/databases/mmseqs/swissprot/swissprot assignments tmpFolder --tax-lineage 1 --majority 0.5 --vote-mode 1 --lca-mode 3 --orf-filter 1 --threads 46
+
+mmseqs createtsv /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/dm14_mmseqs_db assignments /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/dm14_mmseqs.tsv
+
+# removing majority to try to get consensus
+/local/cluster/bin/mmseqs taxonomy /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/dm14_mmseqs_db /nfs5/Mueller_Lab/databases/mmseqs/swissprot/swissprot assignments_1 tmpFolder --tax-lineage 1 --majority 0.2 --vote-mode 1 --lca-mode 3 --orf-filter 1 --threads 46
+
+mmseqs createtsv /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/dm14_mmseqs_db assignments_1 /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/dm14_mmseqs_1.tsv
+```
+
+Current mission is to build a bowtie database of my DM14 sequences and search the sanger 16S sequence against it so that I can try to find the 16S gene in my DM14 genome.
+```{bash}
+mkdir /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/dm14_bowtie_16s
+/local/cluster/bowtie2/bowtie2-build /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/DM14_final.fna /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/dm14_bowtie_16s/dm14_bowtie_db
+
+bowtie2 -f -p 20 -x /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/dm14_bowtie_16s/dm14_bowtie_db -U /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/dm14_sanger.fa -S /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/dm14_bowtie_16s/dm14_align.sam
+```
+
+
+
+Now ASW1 - this is annotation on the adjusted genome (which might need to be readjusted)
+```{bash}
+# nano asw1_bakta.sh
+cd /nfs5/Mueller_Lab/oyster_probiotics/pacbio/bakta
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/bakta/activate.sh 
+/local/cluster/bin/bakta --prefix asw1 --keep-contig-headers --genus Alteromonas /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/ASW1_chrom.adj.fa
+bash /home/micro/englimar/mk/oyster_probiotics/pacbio/bakta/bakta_asw1.sh
+```
+No origins of replications predicted. Going to use Bakta on the 2nd largest contig to see if it has one (tig09).
+```{bash}
+/local/cluster/bin/seqtk subseq asw1_other_tigs.fasta fastalist.txt > asw1_second.fa
+# nano asw1_second_bakta.sh
+cd /nfs5/Mueller_Lab/oyster_probiotics/pacbio/bakta
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/bakta/activate.sh 
+/local/cluster/bin/bakta --prefix asw1_second --keep-contig-headers --genus Alteromonas /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/asw1_second.fa
+
+bash /nfs5/Mueller_Lab/oyster_probiotics/pacbio/bakta/asw1_second/asw1_second_bakta.sh
+```
+Still nothing. Guess I'll look in all of them.
+```{bash}
+# nano asw1_allbut1_bakta.sh
+cd /nfs5/Mueller_Lab/oyster_probiotics/pacbio/bakta
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/bakta/activate.sh 
+/local/cluster/bin/bakta --prefix asw1_allbut1 --keep-contig-headers --genus Alteromonas /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/asw1_other_tigs.fasta
+
+bash /nfs5/Mueller_Lab/oyster_probiotics/pacbio/bakta/asw1_allbut1/asw1_allbut1_bakta.sh
+```
+
+
+
+If necessary, rename .fna files
+
+```{bash, eval = FALSE, class.source = 'fold-show'}
+#awk '/^>/{print ">RE22_" ++i; next}{print}' /nfs5/Mueller_Lab/oyster_probiotics/pacbio/bakta/VcorRE22_renamed.fna > re22_renamed.fna
+#awk '/^>/{print ">DM14_" ++i; next}{print}' /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/dm14/dm14_renamed_adj.fna > dm14_renamed.fna
+```
+On RE22 (for alignment purposes in transcriptome study)
+Two origins of replication, for RE22_1 and RE22_2.
+RE22_1	BLAST+	oriC	2,598,408 -	2598866 (459bp)
+RE22_2	BLAST+	oriC	1,173,695	- 1174945 (1251bp)
+
+Manually edit in Geneious, then re-upload and re-annotate.
+
+
+On B11
+
+```{bash}
+/local/cluster/canu-2.2/bin/canu -d /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11 -p B11 genomeSize=5.0m -pacbio-hifi useGrid=false  correctedErrorRate=0.040 /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/B11.fastq
+```
+
+ #   tigID	tigLen	coverage    tigClass	sugRept	sugBubb	sugCirc	numChildren
+    2	    29667   15.58	      contig      no	    yes	    no	    36
+->  4	    199682  155.09	    contig	    no	    no	    yes	    1869 <- 
+->  6	    3286271 210.61      contig	    no	    no	    no	    40277 <- 
+    7	    29739   1.00        contig	    yes	    no	    no	    1
+->  8	    1204439 208.83	    contig	    no	    no	    yes	    14668 <-
+    9	    26806   15.51	      contig	    yes	    no	    no	    26
+->  10    176812  145.02	    contig	    no	    no	    yes	    1549 <-
+    11    28544   2.59        contig	    yes	    no	    no	    4
+
+Selected 4 contigs based on coverage, length. It seems like some Epibacteriums have multiple chromosomes and plasmids, so it's possible that these four elements are legit.
+
+tig00000004 len=199682 reads=1869 class=contig suggestRepeat=no suggestBubble=no suggestCircular=yes trim=13461-182632
+tig00000006 len=3286271 reads=40277 class=contig suggestRepeat=no suggestBubble=no suggestCircular=no trim=0-3286271
+tig00000008 len=1204439 reads=14668 class=contig suggestRepeat=no suggestBubble=no suggestCircular=yes trim=12776-1193036
+tig00000010 len=176812 reads=1549 class=contig suggestRepeat=no suggestBubble=no suggestCircular=yes trim=11430-164129
+
+Need to trim these four contigs using Geneious.
+B11 has one oriC gene on contig 6:
+
+tig00000006	BLAST+	oriC	294502	294900	.	?	.	ID=OEEMPOCDLA_4571;Name=origin of replication;product=origin of replication;inference=similar to DNA sequence
+
+```{bash}
+#fasta list: tig00000004, tig00000006, tig00000008, tig00000010
+/local/cluster/bin/seqtk subseq B11.contigs.fasta fastalist.txt > b11.fa
+# manually removed redundant zones in Geneious, and rearranged contig 6 to start with oriC
+# nano bakta_b11.sh
+cd /nfs5/Mueller_Lab/oyster_probiotics/pacbio/bakta
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/bakta/activate.sh 
+/local/cluster/bin/bakta --prefix b11 --keep-contig-headers --genus Epibacterium /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/b11_contigs_nonredundant.fa
+
+bash /nfs5/Mueller_Lab/oyster_probiotics/pacbio/bakta/bakta_b11.sh
+```
+
+December 2023: Starting near beginning with B11. Going to use mmseqs to better elaborate all the contigs that were assembled with Canu. B11 has 8 predicted contigs.
+
+```{bash}
+/local/cluster/bin/mmseqs createdb /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/B11.contigs.fasta /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/b11_mmseqs_db
+
+/local/cluster/bin/mmseqs taxonomy /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/b11_mmseqs_db /nfs5/Mueller_Lab/databases/mmseqs/swissprot/swissprot assignments tmpFolder --tax-lineage 1 --majority 0.2 --vote-mode 1 --lca-mode 3 --orf-filter 1 --threads 46 # gives same output with --majority 0.5
+
+/local/cluster/bin/mmseqs createtsv /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/b11_mmseqs_db assignments /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/b11_mmseqs.tsv
+```
+All these assignments are bacterial.
+
+Now going to trim for redundancy.
+>tig00000004 len=199682 reads=1869 class=contig suggestRepeat=no suggestBubble=no suggestCircular=yes trim=13461-182632
+>tig00000006 len=3286271 reads=40277 class=contig suggestRepeat=no suggestBubble=no suggestCircular=no trim=0-3286271
+>tig00000008 len=1204439 reads=14668 class=contig suggestRepeat=no suggestBubble=no suggestCircular=yes trim=12776-1193036
+>tig00000010 len=176812 reads=1549 class=contig suggestRepeat=no suggestBubble=no suggestCircular=yes trim=11430-164129
+
+Need to run annotations for B11. Renamed the contigs >B11_1:4.
+```{bash}
+# within bakta_b11.sh
+#!/usr/bin/env bash
+cd /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/annotation
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/conda-envs/envs/bakta/activate.sh
+/local/cluster/bin/bakta --prefix b11 --keep-contig-headers --genus Epibacterium --output /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/annotation/annots --force  --threads 30 /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/b11_contigs_nonredundant.fa
+# on cluster
+bash /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/bakta_b11.sh
+
+```
+No OriC's detected, but ran through OriFinder anyway. OriCFinder found some origins of replication on B11_2, let's go through them
+
+X Replication Origin 1 3,594 ... 3,605 nt. Only 12 long, horse shit. Not even clear why it's predicted this.
+>Replication Origin 2 173,565 ... 174,165 nt. 601 bp. Corresponds to dnaA gene in genome annotation. No DnaA trio. 2 DnaA boxes.
+
+X Replication Origin 3 175,579 ... 175,860 nt. 282 bp. No DnaA.
+>Replication Origin 4 3,208,645 ... 3,208,954 nt. 310 bp. Has DnaA trio. 5 DnaA boxes.
+
+X Replication Origin 5 3,212,922 ... 3,213,142 nt. 221 bp. No DnaA trio. 3 DnaA boxes.
+>Replication Origin 6 3,286,197 ... 421 nt. 496 long. Has a strong blast hit to an existing known origin of different bacteria. Has DnaA trio and 5 DnaA boxes. Let's call this the origin due to the BLAST similarity. In this instance, there is no need to adjust the chromosome since the origin is already at base 0.
+
+B11_3 also looks like it is set up correctly with respect to origins, from GC disparity plot.
+B11_1 looks fine by the same reasoning.
+B11_4 does need to be rearranged. I cut it at about 69k and double checked the new arrangement on OriFinder, and it looks good. Need to reannotate the whole thing now, however.
+Reannotating B11.
+
+
+
+
+
+MMseqs for ASW1
+```{bash}
+/local/cluster/bin/mmseqs createdb /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/ASW1.contigs.fasta /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/asw1_mmseqs_db
+
+/local/cluster/bin/mmseqs taxonomy /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/asw1_mmseqs_db /nfs5/Mueller_Lab/databases/mmseqs/swissprot/swissprot assignments tmpFolder --tax-lineage 1 --majority 0.2 --vote-mode 1 --lca-mode 3 --orf-filter 1 --threads 30
+
+/local/cluster/bin/mmseqs createtsv /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/asw1_mmseqs_db assignments /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/asw1/asw1_mmseqs.tsv
+
+```
+
+Canu for D16
+```{bash}
+/local/cluster/canu-2.2/bin/canu -d /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16 -p D16 genomeSize=5.0m -pacbio-hifi useGrid=false  correctedErrorRate=0.040 /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/D16.fastq
+```
+MMseqs for D16
+```{bash}
+/local/cluster/bin/mmseqs createdb /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/D16.contigs.fasta /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/d16_mmseqs_db
+/local/cluster/bin/mmseqs taxonomy /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/d16_mmseqs_db /nfs5/Mueller_Lab/databases/mmseqs/swissprot/swissprot assignments tmpFolder --tax-lineage 1 --majority 0.2 --vote-mode 1 --lca-mode 3 --orf-filter 1 --threads 30
+/local/cluster/bin/mmseqs createtsv /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/d16_mmseqs_db assignments /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/d16_mmseqs.tsv
+```
+The two contigs need to be trimmed
+1: trim=8967-3231878
+2: trim=8756-710995
+They were trimmed in Geneious.
+```{bash}
+# within bakta_d16.sh
+#!/usr/bin/env bash
+cd /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/annotation
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/conda-envs/envs/bakta/activate.sh
+/local/cluster/bin/bakta --prefix d16 --keep-contig-headers --genus Pseudoalteromonas --output /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/annotation/annots --force  --threads 40 /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/D16_nr.fasta
+# on cluster
+bash /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/bakta_d16.sh
+```
+Origins of replication located:
+Sequence Id   Type	Start	    Stop	    Strand	Locus Tag
+D16_1         oriC	927371	  927795    ?       origin of replication	
+D16_2	        oriC	258534    259304    ?       origin of replication	
+Contig 1: Move from 1-927,370 to the END. Should start at 927,371.
+Contig 2: Move 1-258,533 to the END. Should start at 258,534.
+
+These have been adjusted manually in Geneious. Now to re-bakta and make sure OriC is the first annotation on each chromosome.
+```{bash}
+# within bakta_d16_redo.sh
+#!/usr/bin/env bash
+cd /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/annotation
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/conda-envs/envs/bakta/activate.sh
+/local/cluster/bin/bakta --prefix d16 --keep-contig-headers --genus Pseudoalteromonas --output /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/annotation/reannots --force  --threads 20 /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/D16_nr_adj.fna
+# on cluster
+bash /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/d16/bakta_d16_redo.sh
+```
+This correctly relocated the origins. Sequence is ready for submission.
+
+
+Reannotating other publications' probiotic Pseudoalteromonads with bakta.
+
+Genome assembly ASM2888545v1 Pseudoalteromonas rhizosphaerae hCg-42
+
+pwd /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/
+```{bash}
+cat PseudoNC201_chrom.fasta PseudoNC201_plasmid.fasta > PseudoNC201_all.fasta
+#within PseudoNC201_bakta.sh
+#!/usr/bin/env bash
+cd /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/conda-envs/envs/bakta/activate.sh
+/local/cluster/bin/bakta --prefix NC201 --keep-contig-headers --genus Pseudoalteromonas --output /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/annots --force --threads 40 /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/PseudoNC201_all.fasta
+# finished
+#within /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/Pseudo2515_bakta.sh
+#!/usr/bin/env bash
+cd /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/conda-envs/envs/bakta/activate.sh
+/local/cluster/bin/bakta --prefix 2515 --keep-contig-headers --genus Pseudoalteromonas --output /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/annots --force --threads 40 /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/2515_all.fasta
+#within /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/hCg-6_bakta.sh
+#!/usr/bin/env bash
+cd /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/conda-envs/envs/bakta/activate.sh
+/local/cluster/bin/bakta --prefix hCg-6 --keep-contig-headers --genus Pseudoalteromonas --output /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/annots --force --threads 40 /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/hCg-6_all.fasta
+#within /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/WCP_bakta.sh
+#!/usr/bin/env bash
+cd /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/conda-envs/envs/bakta/activate.sh
+/local/cluster/bin/bakta --prefix WCP --keep-contig-headers --genus Pseudoalteromonas --output /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/annots --force --threads 40 /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/WCPW15003_all.fasta
+#within /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/hCg-42_bakta.sh
+#!/usr/bin/env bash
+cd /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/conda-envs/envs/bakta/activate.sh
+/local/cluster/bin/bakta --prefix hCg-42 --keep-contig-headers --genus Pseudoalteromonas --output /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/annots --force --threads 40 /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/hCg-42_all.fasta
+#within /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/hOe-125_bakta.sh
+#!/usr/bin/env bash
+cd /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/conda-envs/envs/bakta/activate.sh
+/local/cluster/bin/bakta --prefix hOe-125 --keep-contig-headers --genus Pseudoalteromonas --output /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/annots --force --threads 40 /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/hOe-125.fna
+#within /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/Ps3j6_bakta.sh
+#!/usr/bin/env bash
+cd /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/conda-envs/envs/bakta/activate.sh
+/local/cluster/bin/bakta --prefix Ps3j6 --keep-contig-headers --genus Pseudoalteromonas --output /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/annots --force --threads 40 /nfs5/Mueller_Lab/oyster_probiotics/dm14_comps/pbx_comps/Ps3j6.fasta
+
+```
+
+In the meantime, going to move over all the genomes.
+ASM285025v1 Pseudoalteromonas sp. NC201
+ASM2888545v1 Pseudoalteromonas rhizosphaerae hCg-42
+ASM2461065v1 Pseudoalteromonas rhizosphaerae hCg-6
+ASM2062358v1 Pseudoalteromonas piscicida strain 2515
+ASM1336625v1 Pseudoalteromonas sp. McH1-7 (59 contigs, not great - removing this one)
+ASM1979792v1 Pseudoalteromonas piscicida WCPW15003
+ASM2902650v1 Pseudoalteromonas ostreae hOe-125
+
+Going to add 3J6 since it encodes alterocin, and this may be what the RiPP-like regions are encoding.
+CAJEZZ010000000.1 Pseudoalteromonas sp. 3J6
+
+```{bash}
+cat PseudoNC201_chrom.fasta PseudoNC201_plasmid.fasta > PseudoNC201_all.fasta # 
+cat hCg-42_chrom.fasta hCg-42_plas1.fasta hCg-42_plas2.fasta > hCg-42_all.fasta #
+cat hCg-6_chrom1.fasta hCg-6_chrom2.fasta > hCg-6_all.fasta # 
+cat 2515_chrom.fasta 2515_plas.fasta > 2515_all.fasta # 
+cat WCPW15003_chrom1.fasta WCPW15003_chrom2.fasta > WCPW15003_all.fasta #
+datasets download genome accession GCF_029026505.1 --include genome # got this renamed as hOe-125.fna
+```
+Have bakta-annotated all 6 of these genomes. Will now upload the .GBFF files into Geneious.
+
+Making a phylogenetic tree with all Pseudoalteromonas reference genomes (55) + DM14 + RE22. Using RaxML online.
+
+
+```{r}
+pseudoalt_tree <- treeio::read.newick("~/Documents/Oyster_Project/genomes/pseudoalteromonas/Pseudo_ref_genes.nwk")
+ggtree(pseudoalt_tree)+
+  geom_tiplab()
+```
+
+B11 OD600 readings for supernatant
+```{r}
+b11_od600 <- read.csv("~/Documents/Oyster_Project/genomes/b11/b11_od600.csv", header = T)
+b11_od600$Treatment <- factor(b11_od600$Treatment)
+b11_od600$Replicate <- factor(b11_od600$Replicate)
+b11_od600$Supernatant_source <- factor(b11_od600$Supernatant_source)
+b11_od600$Supernatant_O2 <- factor(b11_od600$Supernatant_O2)
+b11_od600$N2_bubbling <- factor(b11_od600$N2_bubbling)
+b11_od600$Shaking_inc <- factor(b11_od600$Shaking_inc)
+b11_od600$Num_1.8 <- factor(b11_od600$Num_1.8)
+b11_od600$Num_1.4 <- factor(b11_od600$Num_1.4)
+```
+Exploratory plot.
+```{r}
+ggplot(data = b11_od600, aes(x = Treatment, y = OD600))+
+  geom_point(aes(color = Treatment))
+```
+Looking at ratios.
+```{r}
+b11_od_ratios <- read.csv("~/Documents/Oyster_Project/genomes/b11/b11_od_ratios.csv", header = T)
+b11_od_ratios$Treatment <- factor(b11_od_ratios$Treatment)
+b11_od_ratios <- b11_od_ratios %>% mutate(Supernatant_O2 = case_when(
+  (Supernatant_O2 == "N") ~ "Stagnant supe.",
+  (Supernatant_O2 == "Y") ~ "Shaking supe."
+)) %>%
+  mutate(N2_bubbling = case_when(
+    (N2_bubbling == "Y") ~ "O2 removed by N2",
+    (N2_bubbling == "N") ~ "O2 not removed by N2"
+  )) %>%
+  mutate(Shaking_inc = case_when(
+    (Shaking_inc == "N") ~ "Stagnant final inc.",
+    (Shaking_inc == "Y") ~ "Shaking final inc."
+  ))
+
+b11_re22_growth_plot <- ggplot(data = b11_od_ratios, aes(x = Treatment_pair, y = Ratio))+
+  geom_point(aes(color = Supernatant_O2), size = 4)+
+  geom_hline(yintercept = 1, linetype = "dashed")+
+  theme(panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
+        panel.grid.major.y = element_line(color = "gray90"),
+        panel.grid.minor.y = element_line(color = "gray90"),
+        panel.grid.major.x = element_line(color = "gray90"),
+        panel.grid.minor.x = element_line(color = "gray90"),
+        axis.text.x = element_text(color = "black", angle = 0, hjust = 0.5),
+        axis.text.y = element_text(color = "black"),
+        legend.key = element_rect(fill = NA),
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        strip.background = element_rect(fill = "white", color = "black", linetype = "solid"))+
+  scale_color_manual(values = c("hotpink","darkorchid4"))+
+  labs(y = "Growth ratio (Trit. B11 / V.cor. RE22)", color = "Supernatant oxygen", x = "Treatment pair")+
+  facet_wrap(N2_bubbling ~ Shaking_inc, nrow = 1, scales = "free_x")
+ggsave(b11_re22_growth_plot, file = "~/Documents/Oyster_Project/genomes/b11/b11_re22_growth_plot.png", units = "mm", height = 75, width = 200)
+```
+
+
+
+
+```{r}
+ggplot(data = b11_od600, aes(x = Treatment, y = OD600))+
+  geom_boxplot(aes(group = Treatment, fill = Supernatant_source))
+
+ggplot(data = b11_od600, aes(x = Treatment, y = OD600))+
+  geom_boxplot(aes(group = Treatment, fill = Shaking_inc))+
+  facet_grid(Supernatant_O2~Supernatant_source, scales = "free_x")
+```
+Paired OD600 ratios.
+```{r}
+b11_od600 <- read.csv("~/Documents/Oyster_Project/genomes/b11/b11_od600.csv", header = T)
+b11_od600 <- b11_od600 %>% mutate(Supernatant_O2 = case_when(
+  (Supernatant_O2 == "N") ~ "Stagnant supe.",
+  (Supernatant_O2 == "Y") ~ "Shaking supe."
+)) %>%
+  mutate(N2_bubbling = case_when(
+    (N2_bubbling == "Y") ~ "O2 removed by N2",
+    (N2_bubbling == "N") ~ "O2 not removed by N2"
+  )) %>%
+  mutate(Shaking_inc = case_when(
+    (Shaking_inc == "N") ~ "Stagnant final inc.",
+    (Shaking_inc == "Y") ~ "Shaking final inc."
+  )) %>%
+  mutate(Supernatant_source = case_when(
+    (Supernatant_source == "B11" ~ "Trit. B11"),
+    (Supernatant_source == "RE22" ~ "V. cor RE22")
+  ))
+b11_od600$Treatment <- factor(b11_od600$Treatment)
+b11_od600$Replicate <- factor(b11_od600$Replicate)
+b11_od600$Supernatant_source <- factor(b11_od600$Supernatant_source)
+b11_od600$Supernatant_O2 <- factor(b11_od600$Supernatant_O2)
+b11_od600$N2_bubbling <- factor(b11_od600$N2_bubbling)
+b11_od600$Shaking_inc <- factor(b11_od600$Shaking_inc)
+b11_od600$Num_1.8 <- factor(b11_od600$Num_1.8)
+b11_od600$Num_1.4 <- factor(b11_od600$Num_1.4)
+b11_od600$Trreatment_pair <- factor(b11_od600$Trreatment_pair)
+#b11_od600 %>% group_by(Treatment) %>% top_n(1, Mean)
+# not working, just gonna hand select
+b11_od600_for_barplot <- b11_od600[c(1,6,11,16,21,26,31,36,41,46,51,56,61,66,71,76),]
+
+```
+
+
+
+Stats
+```{r}
+descdist(b11_od600$OD600) # normal, can use anovas and t tests
+summary(lm(OD600 ~ Supernatant_O2 + Supernatant_source + Shaking_inc + N2_bubbling, data = b11_od600))# everything except supernatant source is significant
+summary(lm(OD600 ~ Treatment, data = b11_od600))
+summary(lm(OD600 ~ Supernatant_O2*Supernatant_source, data = b11_od600)) # no
+summary(lm(OD600 ~ Supernatant_source*N2_bubbling, data = b11_od600)) # no
+summary(lm(OD600 ~ Supernatant_source*Shaking_inc, data = b11_od600)) # no
+t.test(OD600 ~ Supernatant_O2, data = b11_od600) # 0.05368
+```
+Answering question, does RE22 grow worse when on B11 supernatant vs its own supernatant
+```{r}
+summary(lm(OD600 ~ Supernatant_source, data = b11_od600)) # strong no
+summary(lm(OD600 ~ Supernatant_source*Supernatant_O2, data = b11_od600)) # no interaction bw these two
+
+```
+Tests for each paired set
+
+```{r}
+# 1 vs 9
+vs1_9 <- subset(b11_od600, Trreatment_pair == "1")
+descdist(vs1_9$OD600) #normie
+t.test(OD600 ~ Supernatant_source, data = vs1_9) #p-value = 0.926
+summary(glm(OD600 ~ Supernatant_source, family = "quasibinomial", data = vs1_9))
+vs2_10 <- subset(b11_od600, Trreatment_pair == "2")
+descdist(vs2_10$OD600) # beta
+summary(glm(OD600 ~ Supernatant_source, family = "quasibinomial", data = vs2_10)) # p = 0.01734
+vs3_11 <- subset(b11_od600, Trreatment_pair == "3")
+descdist(vs3_11$OD600) # beta
+summary(glm(OD600 ~ Supernatant_source, family = "quasibinomial", data = vs3_11)) # p = 0.258769
+vs4_12 <- subset(b11_od600, Trreatment_pair == "4")
+descdist(vs4_12$OD600) # beta
+summary(glm(OD600 ~ Supernatant_source, family = "quasibinomial", data = vs4_12)) # p = 0.109
+vs5_13 <- subset(b11_od600, Trreatment_pair == "5")
+descdist(vs5_13$OD600) # beta / normal
+summary(glm(OD600 ~ Supernatant_source, family = "quasibinomial", data = vs5_13)) # p = 0.000877
+vs6_14 <- subset(b11_od600, Trreatment_pair == "6")
+descdist(vs6_14$OD600) # lognormal 
+summary(glm(OD600 ~ Supernatant_source, family = "gaussian", data = vs6_14)) # p = 0.404
+vs7_15 <- subset(b11_od600, Trreatment_pair == "7")
+descdist(vs7_15$OD600) # beta
+summary(glm(OD600 ~ Supernatant_source, family = "quasibinomial", data = vs7_15)) # p = 0.0783
+vs8_16 <- subset(b11_od600, Trreatment_pair == "8")
+descdist(vs8_16$OD600) # uber normal
+t.test(OD600 ~ Supernatant_source, data = vs8_16) # p = 0.01134
+# add these values to the raw data.
+b11_od600_for_barplot$pvalue <- NA
+b11_od600_for_barplot <- b11_od600_for_barplot %>% mutate(pvalue = case_when(
+  (Trreatment_pair == "1" ~ "0.926"),
+  (Trreatment_pair == "2" ~ "0.01734"),
+  (Trreatment_pair == "3" ~ "0.258769"),
+  (Trreatment_pair == "4" ~ "0.109"),
+  (Trreatment_pair == "5" ~ "0.000877"),
+  (Trreatment_pair == "6" ~ "0.404"),
+  (Trreatment_pair == "7" ~ "0.0783"),
+  (Trreatment_pair == "8" ~ "0.01134"))
+) %>% mutate(symbol = case_when(
+  ((pvalue <= 0.10) & (pvalue > 0.05)) ~ "*",
+  ((pvalue <= 0.05) & (pvalue > 0.01)) ~ "**",
+  (pvalue <= 0.01) ~ "***"
+))
+```
+
+
+Plot with stats in it.
+```{r}
+#b11_od600_plot <- 
+b11_od600_for_barplot_summary <- b11_od600_for_barplot %>% group_by(Trreatment_pair)%>% summarize(OD600 = max(OD600+StDev), symbol = first(symbol))
+b11_od600_for_barplot_summary <- b11_od600_for_barplot %>% group_by(Trreatment_pair, Supernatant_source)%>% summarize(OD600 = mean(Mean), symbol = first(symbol), StDev = StDev)
+b11_od600_for_barplot_summary[c(4,10,14,16),4] <- NA
+
+re22_od600_barplot <- 
+ggplot(b11_od600_for_barplot_summary, aes(x = Trreatment_pair, y = OD600, fill = Supernatant_source))+
+  geom_bar(position = position_dodge(width = 0.9), stat = "identity", color = "gray40")+
+  geom_errorbar(aes(ymin = OD600-StDev, ymax = OD600+StDev), position = position_dodge(width = 0.9), stat = "identity", width = 0.5)+
+  geom_text(inherit.aes = FALSE, data = b11_od600_for_barplot_summary, aes(label = symbol, y = OD600, x = Trreatment_pair), stat = "identity", vjust = -4, fontface = "bold", size = 5, y = 0.6)+
+    theme(panel.background = element_rect(fill = "white"),
+        panel.border = element_rect(color = "black", fill = NA, linewidth = 0.5),
+        panel.grid.major.y = element_line(color = "gray90"),
+        panel.grid.minor.y = element_line(color = "gray90"),
+        panel.grid.major.x = element_line(color = "gray90"),
+        panel.grid.minor.x = element_line(color = "gray90"),
+        axis.text.x = element_text(color = "black", angle = 0, vjust = 0.5),
+        axis.text.y = element_text(color = "black"),
+        legend.key = element_rect(fill = NA),
+        legend.position = "left",
+        plot.title = element_text(hjust = 0.5),
+        plot.subtitle = element_text(hjust = 0.5),
+        strip.background = element_rect(fill = "white", color = "black", linetype = "solid"))+
+  scale_fill_manual(values = c("chartreuse3","skyblue2"))+
+  scale_y_continuous(expand = c(0,0), limits = c(0,.82))+ # remove space at bottom while keeping space at top
+  labs(fill = "Supernatant producer", x = "Treatment pair",  y = expression(paste(italic("V. cor"), " RE22 growth")))
+ggsave(re22_od600_barplot, file = "~/Documents/Oyster_Project/genomes/b11/re22_od600_barplot.png", units = "mm", height = 100, width = 200)
+
+```
+Brown index
+Should be B11 stag ~> B11 shake > both RE22s
+
+Using the circlize package to put the antiSMASH regions 
+
+Checking the short, low-coverage reads against the full genome.
+```{bash}
+nano b11_extra_contigs.txt
+tig00000002
+tig00000007
+tig00000009
+tig00000011
+/local/cluster/bin/seqtk subseq B11.contigs.fasta b11_extra_contigs.txt > b11_extra_contigs.fasta
+
+```
