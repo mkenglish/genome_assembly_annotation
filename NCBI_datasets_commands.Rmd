@@ -1,0 +1,1613 @@
+---
+title: "Genome comparisons: pbx B11"
+output: html_notebook
+---
+Number of genomes in a given taxa (taxa ID from NCBI)
+Epibacterium (1649279)
+How many representative genomes are there?
+```{bash}
+datasets assembly-descriptors tax-id 1649279 --refseq | jq '.datasets[].assembly_category' | grep -c "representative genome"
+datasets assembly-descriptors tax-id 1649279 --refseq | jq '.datasets[].assembly_category' | grep -n "representative genome"
+# 4: lines 1, 52, 54, 57
+datasets assembly-descriptors tax-id 1649279 --refseq | jq '.datasets[].assembly_accession' | wc -l
+# 58 lines total
+```
+1: GCF_000376545.2
+52: GCF_001458415.1
+54: GCF_003003215.1
+57: GCF_900102795.1
+
+Select the representative genomes, one at a time.
+1: GCF_000376545.2
+```{bash}
+datasets assembly-descriptors accession GCF_000376545.2
+mkdir Epibacterium_mobile_F1926
+datasets download assembly GCF_000376545.2 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Epibacterium_mobile_F1926.zip
+unzip Epibacterium_mobile_F1926.zip
+
+fastANI -q /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/genomes/current_pbx/filtered_reads/B11test/B11_scaffolds.long.fna -r ../Epibacterium_mobile_F1926/ncbi_dataset/data/GCF_000376545.2/GCF_000376545.2_ASM37654v2_genomic.fna -o B11_vs_F1926 --visualize
+# loction of scripts
+/local/cluster/mueller/scripts/FastANI/scripts
+
+#On local terminal
+Rscript Documents/Oyster_Project/B11_vs_F1926/visualize.R \
+Documents/Oyster_Project/B11_vs_F1926/B11_scaffolds.long.fna \
+Documents/Oyster_Project/B11_vs_F1926/GCF_000376545.2_ASM37654v2_genomic.fna \
+Documents/Oyster_Project/B11_vs_F1926/B11_vs_F1926.visual
+
+# prokka
+prokka -outdir /dfs//Mueller_Lab/mk/epi_prokkas -prefix F1926 -locustag n /dfs//Mueller_Lab/mk/comp_genome/Epibacterium_mobile_F1926/ncbi_dataset/data/GCF_000376545.2/GCF_000376545.2_ASM37654v2_genomic.fna
+```
+TO-DO: run prokka on the 3 remaining strains
+
+52: GCF_001458415.1
+```{bash}
+datasets assembly-descriptors accession GCF_001458415.1
+mkdir Epibacterium_multivorans_CECT7557
+cd Epibacterium_multivorans_CECT7557
+datasets download assembly GCF_001458415.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Epibacterium_multivorans_CECT7557.zip
+unzip Epibacterium_multivorans_CECT7557.zip
+cd ../Epibacterium_comp/
+
+fastANI -q /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/genomes/current_pbx/filtered_reads/B11test/B11_scaffolds.long.fna -r  ../Epibacterium_multivorans_CECT7557/ncbi_dataset/data/GCF_001458415.1/GCF_001458415.1_Tr.multivorans_CECT7557_Seqman_Prokka_genomic.fna -o B11_vs_CECT7557 --visualize
+# on local terminal
+Rscript Documents/Oyster_Project/B11_vs_CECT7557/visualize.R \
+Documents/Oyster_Project/B11_vs_CECT7557/B11_scaffolds.long.fna \
+Documents/Oyster_Project/B11_vs_CECT7557/GCF_001458415.1_Tr.multivorans_CECT7557_Seqman_Prokka_genomic.fna \
+Documents/Oyster_Project/B11_vs_CECT7557/B11_vs_CECT7557.visual
+```
+
+54: GCF_003003215.1
+```{bash}
+datasets assembly-descriptors accession GCF_003003215.1
+mkdir Epibacterium_scottomollicae_DSM25328
+cd Epibacterium_scottomollicae_DSM25328
+datasets download assembly GCF_003003215.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Epibacterium_scottomollicae_DSM25328.zip
+unzip Epibacterium_scottomollicae_DSM25328.zip
+fastANI \
+-q /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/genomes/current_pbx/filtered_reads/B11test/B11_scaffolds.long.fna \
+-r ../Epibacterium_scottomollicae_DSM25328/ncbi_dataset/data/GCF_003003215.1/GCF_003003215.1_ASM300321v1_genomic.fna \
+-o B11_vs_DSM25328 --visualize
+# local terminal
+Rscript Documents/Oyster_Project/B11_vs_DSM25328/visualize.R \
+Documents/Oyster_Project/B11_vs_DSM25328/B11_scaffolds.long.fna \
+Documents/Oyster_Project/B11_vs_DSM25328/GCF_003003215.1_ASM300321v1_genomic.fna \
+Documents/Oyster_Project/B11_vs_DSM25328/B11_vs_DSM25328.visual
+```
+
+57: GCF_900102795.1
+```{bash}
+datasets assembly-descriptors accession GCF_900102795.1
+mkdir Epibacterium_ulvae_U95
+cd Epibacterium_ulvae_U95
+datasets download assembly GCF_900102795.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Epibacterium_ulvae_U95.zip
+unzip Epibacterium_ulvae_U95.zip
+cd ../Epibacterium_comp/
+fastANI \
+-q /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/genomes/current_pbx/filtered_reads/B11test/B11_scaffolds.long.fna \
+-r ../Epibacterium_ulvae_U95/ncbi_dataset/data/GCF_900102795.1/GCF_900102795.1_IMG-taxon_2622736501_annotated_assembly_genomic.fna \
+-o B11_vs_U95 --visualize
+# local terminal
+
+Rscript Documents/Oyster_Project/B11_vs_U95/visualize.R \
+Documents/Oyster_Project/B11_vs_U95/B11_scaffolds.long.fna \
+Documents/Oyster_Project/B11_vs_U95/GCF_900102795.1_IMG-taxon_2622736501_annotated_assembly_genomic.fna \
+Documents/Oyster_Project/B11_vs_U95/B11_vs_U95.visual
+```
+
+Can you try extracting out region 3.1 from B11 and running FastANI using that as a “query genome” against all the references?
+```{bash}
+# query: /dfs//Mueller_Lab/mk/comp_genome/Epibacterium_comp/B11_3.1.fa
+# subjects:
+fastANI \
+-q /dfs//Mueller_Lab/mk/comp_genome/Epibacterium_comp/B11_3.1.fa \
+-r /dfs//Mueller_Lab/mk/comp_genome/Epibacterium_mobile_F1926/ncbi_dataset/data/GCF_000376545.2/GCF_000376545.2_ASM37654v2_genomic.fna \
+-o B11_3.1_vs_F1926 --visualize
+
+Rscript Documents/Oyster_Project/B11_3.1_vs_F1926/visualize.R \
+Documents/Oyster_Project/B11_3.1_vs_F1926/B11_3.1.fa \
+Documents/Oyster_Project/B11_3.1_vs_F1926/GCF_000376545.2_ASM37654v2_genomic.fna \
+Documents/Oyster_Project/B11_3.1_vs_F1926/B11_3.1_vs_F1926.visual
+
+# Extracted matching segment from F1926
+<!-- genop \ -->
+<!-- -q /dfs//Mueller_Lab/mk/comp_genome/Epibacterium_comp/B11_3.1.fa \ -->
+<!-- -r /dfs//Mueller_Lab/mk/comp_genome/Epibacterium_mobile_F1926/ncbi_dataset/data/GCF_000376545.2/F1926_1.5.fa \ -->
+<!-- -o B11_3.1_vs_F1926_1.5 --visualize \ -->
+<!-- - fragLen 1000 \ -->
+<!-- - minFrag 25 -->
+
+<!-- Rscript Documents/Oyster_Project/B11_3.1_vs_F1926_1.5/visualize.R \ -->
+<!-- Documents/Oyster_Project/B11_3.1_vs_F1926_1.5/B11_3.1.fa \ -->
+<!-- Documents/Oyster_Project/B11_3.1_vs_F1926_1.5/F1926_1.5.fa \ -->
+<!-- Documents/Oyster_Project/B11_3.1_vs_F1926_1.5/B11_3.1_vs_F1926_1.5.visual -->
+```
+
+Ok, so I would make a custom blast database from all subject genomes and search region 3.1 against them. 
+
+I would do this on the command line and create an “m8” formatted output that will be easy to parse. This will allow you to easily find the coordinates and contig IDs of all the hits. Then you should be able to use your fancy python skills to extract out each locus from the respective subject genomes. Then run the fastANI on those extractions and we can see how things look. 
+```{bash}
+# Using 58 genomes
+ cp /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genome_fasta/*_genomic.fna /dfs//Mueller_Lab/mk/comp_genome/Epibact_genomes/
+# make db, from within Epibact_genomes:
+nano mkblst
+for f in *.fna; do makeblastdb -in $f -dbtype nucl -out $(basename $f _genomic.fna); done
+
+ls *_genomic.fna | sed -e 's/_genomic\.fna//g' > genome.list
+
+nano fstni
+#!/bin/bash
+
+while read line
+do
+        blastall -p blastn -i /dfs//Mueller_Lab/mk/comp_genome/Epibacterium_comp/B11_3.1.fa -d $line -o B11_region3_1_v_$line.out -e 1e-10 -m 8
+done < $1
+
+bash fstni genome.list
+
+<!-- cat \ -->
+<!-- /dfs//Mueller_Lab/mk/comp_genome/Epibacterium_mobile_F1926/ncbi_dataset/data/GCF_000376545.2/GCF_000376545.2_ASM37654v2_genomic.fna \ -->
+<!-- /dfs//Mueller_Lab/mk/comp_genome/Epibacterium_multivorans_CECT7557/ncbi_dataset/data/GCF_001458415.1/GCF_001458415.1_Tr.multivorans_CECT7557_Seqman_Prokka_genomic.fna \ -->
+<!-- /dfs//Mueller_Lab/mk/comp_genome/Epibacterium_scottomollicae_DSM25328/ncbi_dataset/data/GCF_003003215.1/GCF_003003215.1_ASM300321v1_genomic.fna \ -->
+<!-- /dfs//Mueller_Lab/mk/comp_genome/Epibacterium_ulvae_U95/ncbi_dataset/data/GCF_900102795.1/GCF_900102795.1_IMG-taxon_2622736501_annotated_assembly_genomic.fna > Epibact_comps.fa -->
+
+<!-- makeblastdb -in /dfs//Mueller_Lab/mk/comp_genome/Epibacterium_comp/Epibact_comps.fa -dbtype nucl -parse_seqids -hash_index -out Epibact_3.1_comp_db -->
+
+<!-- blastall -p blastn -d Epibact_3.1_comp_db -i /dfs//Mueller_Lab/mk/comp_genome/Epibacterium_comp/B11_3.1.fa -m 8 -o Epibact_comps.m8 -->
+```
+Basically, you need to run a BLASTN of the region 3.1 gene sequences (in nucleotides) against each of the reference genomes. Then, you will mess with the m8 outputs a bit to get them formatted properly for visualization. The most time consuming part might be creating Genbank files for each of the subject hits, since the R package won’t use the ones downloaded from NCBI. Even so, that shouldn’t take too long. Let me know if you have questions and/or run into issues. I suspect that once you start working in R that your figures will be much cooler than this basic version. 
+
+/dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/notes.txt #created a query of the B11 region3.1 with nt sequences for each gene in the region; allows for gene by gene blasts to be performed instead of whole locus (better for visualization of synteny at the gene level); only the top hit is considered (-b 1); used whole genome assemblies for subject reference sequence databases
+```{bash}
+nano blastouts.sh
+#!/bin/bash
+for f in /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genome_fasta/*.nin; do blastall -p blastn \
+-i /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11_region3_1.fna \
+-d /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genome_fasta/$(basename $f .nin) \
+-o /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/B11_region3_1_v_$(basename $f .nin).out \
+-e 1e-10 -m 8 -b 1; done
+
+cp /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/*.out ./
+cp /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/B11_region3_1_v_Epibacterium_mobile_S3585.out ./
+
+# adjust the coordinates from the gene specific start and stop to the contig coordinate start and stop and filter out alignments that are < 70% of gene length (user defined threshold)
+nano filt_length.sh
+for f in *.out; do m8_coord_adj.rb /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11.gff $f 0.7 > $(basename $f .out).adj; done
+# I think this was already done, as I have adj.out files.
+```
+troubleshooting
+```{bash}
+# filt length problems
+m8_coord_adj.rb /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11.gff B11_region3_1_v_Epibacterium_mobile_F1926.out
+```
+
+Inspect head of outputs to make sure things look good.
+Collect total alignment coordinate start and endpoints on query and subject references and subject reference ID information.
+```{bash}
+nano coords.sh
+for f in *.adj.out; do cut -f 2 $f | sort -u > $(basename $f .adj.out).subject_ID.txt; done
+for f in *.adj.out; do echo $(basename $f .adj.out) >> query_ref.txt; sort -k 7 -n $f | head -n 1 | awk -F "\t" '{if ($7 < $8) {print $7} else {print $8} }' >> query_start.txt; sort -k 7 -nr $f | head -n 1 | awk -F "\t" '{if ($7 > $8) {print $7} else {print $8} }' >> query_end.txt; sort -k 9 -n $f | head -n 1 | awk -F "\t" '{if ($9 < $10) {print $9} else {print $10} }' >> ref_start.txt; sort -k 9 -nr $f | head -n 1 | awk -F "\t" '{if ($9 > $10) {print $9} else {print $10} }' >> ref_end.txt; done
+paste query_ref.txt query_start.txt query_end.txt ref_start.txt ref_end.txt > coordinate_info.txt
+```
+
+Switch to R; single example shown below.
+GenoPlotR package will not read genbank files with multiple loci; need single "LOCUS" (contig/chromosome/etc) genbank files. Imported into Geneious, kept sequences separate, then exported the sequence with the region 3.1 match as a genbank (use .subject_ID.txt files created above tcao find which sequence to export)
+
+Alternatively, to get the genbank split into files containing single loci can use AWK to split downloaded genbank files and then pick the correct one of the outputs. First file created "_1" can be deleted and is essentially empty.
+Trial with E. mobile F1926.
+```{bash}
+# what is this for? To separate genbank into pieces that R can use
+# F1926
+awk '{f="Epibacterium_mobile_F1926_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs/Mueller_Lab/mk/comp_genome/Epibacterium_mobile_F1926/ncbi_dataset/data/GCF_000376545.2/genomic.gbff
+# This makes a bunch of files , _1.gb through _6.gb. Each of these is a locus.
+```
+
+```{bash}
+fastANI -q /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/genomes/current_pbx/filtered_reads/B11test/B11_scaffolds.long.fna -r ../Epibacterium_mobile_F1926/ncbi_dataset/data/GCF_000376545.2/GCF_000376545.2_ASM37654v2_genomic.fna -o B11_vs_F1926 --visualize
+
+fastANI -q /dfs//Mueller_Lab/mk/epi_prokkas/B11_3.1.fna -r /dfs/Mueller_Lab/mk/comp_genome/Epibacterium_mobile_F1926/F1926_3.1homolog.fa --fragLen 500 --minFrag 5 -o B11_3.1_vs_F1926_homolog --visualize
+Rscript Desktop/B11_3.1_vs_F1926_homolog/visualize.R \
+Desktop/B11_3.1_vs_F1926_homolog/B11_3.1.fa \
+Desktop/B11_3.1_vs_F1926_homolog/F1926_3.1homolog.fa \
+Desktop/B11_3.1_vs_F1926_homolog/B11_3.1_vs_F1926_homolog.visual
+# very bad plot - totally different lengths
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+library(genoPlotR)
+Query <- read_dna_seg_from_file(file="~/Documents/Oyster_project/comp_genome/Epibacterium_mobile_PBX_B11_ctg3.gbk", fileType="genbank", tagsToParse="CDS", gene_type="arrows")
+Ref <- read_dna_seg_from_file(file="~/Documents/Oyster_project/comp_genome/Epibacterium_mobile_F1926/Epibacterium_mobile_F1926_2.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Documents/Oyster_project/comp_genome/Epibacterium_mobile_F1926/B11_region3_1_v_Epibacterium_mobile_F1926.adj")
+
+#set xlims based on m8 BLAST max/mins (defined in coordinate_info.txt file created above)
+pdf(file = "testmap.pdf")
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(2416000,2482000)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F1926", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+# lims: start and end pos for displayed region. second set of vals changes +-10k
+```
+\
+You can use the attached spreadsheet to start identifying the genbank locus (subject ID) and the coordinates you need. The color coding relates to how confident I am that the subject genome has a good match to region 3.1. Basically all of the E. mobile genomes seem to have a good match. Anything outside of the mobile species is more diverged. From this I expect that region 3.1 should be ~ 57Kb in length. Set your xlim coordinates to be ~5Kb on each side of the start and end positions for the alignments in the subject genomes. The last column should match the genome locus you need to find in the genbank files, but I haven’t verified that this worked properly. (Same caveat applies tot the coordinates, actually. Sorry, You are the beta-tester here, I guess. Hopefully things work as they should and no problems. That’s usually how it works.)
+```{bash}
+datasets assembly-descriptors accession GCF_000376545.2
+mkdir Epibacterium_mobile_F1926
+datasets download assembly GCF_000376545.2 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Epibacterium_mobile_F1926.zip
+unzip Epibacterium_mobile_F1926.zip
+```
+\
+Failed for-loop:
+```{bash}
+nano datasetcommand.sh
+#!/bin/bash
+for line in /dfs//Mueller_Lab/mk/comp_genome/Epibact_genomes/identifiers.tsv; do
+#  name=awk '{ print $1 }' identifiers.tsv
+  awk -v name ='{ print $1 }' identifiers.tsv #> name
+#  accession=awk '{ print $2 }' identifiers.tsv
+  awk -v accession = '{ print $2 }' identifiers.tsv #> accession
+  mkdir /$name
+  cd $name
+  datasets download assembly $accession --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename $name.zip
+  cd /dfs//Mueller_Lab/mk/comp_genome/Epibact_genomes
+done
+```
+\
+Epibacterium_mobile_270-3
+```{bash}
+awk '{f="Epibacterium_mobile_270-3_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_270-3.gbff
+# to find the contig.gb contiaining the subject ID you want
+grep -R "NZ_LNVY01000013.1" ./
+# Epibacterium_mobile_270-3_6.gb
+```
+```{r}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_270-3/Epibacterium_mobile_270-3_6.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_270-3/B11_region3_1_v_Epibacterium_mobile_270-3.adj")
+
+#set xlims based on m8 BLAST max/mins (defined in coordinate_info.txt file created above)
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(159500, 236593)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile 270-3", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+# lims: start and end pos for displayed region. second set of vals changes +-10k
+```
+\
+Epibacterium_mobile_45A6
+```{bash}
+awk '{f="Epibacterium_mobile_45A6_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_45A6.gbff
+grep -R "NZ_LKAI01000001.1" | head -n 1 # Epibacterium_mobile_45A6_2.gb
+```
+```{r, warning = FALSE, message = FALSE}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_45A6/Epibacterium_mobile_45A6_2.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_45A6/B11_region3_1_v_Epibacterium_mobile_45A6.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(2095744, 2172849)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile 45A6", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_PrR008
+```{bash}
+awk '{f="Epibacterium_mobile_PrR008_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_PrR008.gbff
+grep -R "NZ_JAAGVR010000043.1" | head -n 1 # Epibacterium_mobile_PrR008_44.gb
+```
+```{r, warning = FALSE, message = FALSE}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_PrR008/Epibacterium_mobile_PrR008_44.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_PrR008/B11_region3_1_v_Epibacterium_mobile_PrR008.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(46872, 123982)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile PrR008", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_PrR010
+```{bash}
+awk '{f="Epibacterium_mobile_PrR010_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_PrR010.gbff
+grep -R "NZ_JAAGVS010000043.1" | head -n 1 #./Epibacterium_mobile_PrR010_44.gb
+```
+```{r, warning = FALSE, message = FALSE}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_PrR010/Epibacterium_mobile_PrR010_44.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_PrR010/B11_region3_1_v_Epibacterium_mobile_PrR010.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(46872, 123982)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile PrR0010", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_M41-2_2
+```{bash}
+awk '{f="Epibacterium_mobile_M41-2_2_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_M41-2_2.gbff
+grep -R "NZ_LNWW01000001.1" | head -n 1 # Epibacterium_mobile_M41-2_2_2.gb
+```
+```{r, warning = FALSE, message = FALSE}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_M41-2_2/Epibacterium_mobile_M41-2_2_2.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_M41-2_2/B11_region3_1_v_Epibacterium_mobile_M41-2_2.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(452371, 529483)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile M41-2_2", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_M43-2_3
+```{bash}
+awk '{f="Epibacterium_mobile_M43-2_3_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_M43-2_3.gbff
+grep -R "NZ_LNWX01000006.1" | head -n 1 # Epibacterium_mobile_M43-2_3_57.gb
+```
+```{r, warning = FALSE, message = FALSE}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_M43-2_3/Epibacterium_mobile_M43-2_3_57.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_M43-2_3/B11_region3_1_v_Epibacterium_mobile_M43-2_3.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(452371, 529483)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile M43-2_3", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_NBRC102038
+```{bash}
+awk '{f="Epibacterium_mobile_NBRC102038_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_NBRC102038.gbff
+grep -R "NZ_LNWZ01000003.1" | head -n 1 # Epibacterium_mobile_NBRC102038_24.gb
+```
+```{r, warning = FALSE, message = FALSE}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_NBRC102038/Epibacterium_mobile_NBRC102038_24.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_NBRC102038/B11_region3_1_v_Epibacterium_mobile_NBRC102038.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(452372, 529484)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile NBRC102038", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile
+```{bash}
+awk '{f="Epibacterium_mobile_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile.gbff
+grep -R "NZ_LR027553.1" | head -n 1 # Epibacterium_mobile_2.gb
+```
+```{r, warning = FALSE, message = FALSE}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile/Epibacterium_mobile_2.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile/B11_region3_1_v_Epibacterium_mobile.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(2577584, 2654735)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_DSM_23403
+```{bash}
+awk '{f="Epibacterium_mobile_DSM_23403_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_DSM_23403.gbff
+grep -R "NZ_FNNK01000001.1" | head -n 1 # Epibacterium_mobile_DSM_23403_25.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_DSM_23403/Epibacterium_mobile_DSM_23403_25.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_DSM_23403/B11_region3_1_v_Epibacterium_mobile_DSM_23403.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(346335, 423496)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile DSM_23403", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F2459
+```{bash}
+awk '{f="Epibacterium_mobile_F2459_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F2459.gbff
+grep -R "NZ_LNWC01000002.1" | head -n 1 # Epibacterium_mobile_F2459_13.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F2459/Epibacterium_mobile_F2459_13.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F2459/B11_region3_1_v_Epibacterium_mobile_F2459.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(196105, 273266)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F2459", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F2587
+```{bash}
+awk '{f="Epibacterium_mobile_F2587_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F2587.gbff
+grep -R "NZ_LNWE01000014.1" | head -n 1 # Epibacterium_mobile_F2587_7.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F2587/Epibacterium_mobile_F2587_7.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F2587/B11_region3_1_v_Epibacterium_mobile_F2587.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(258611, 335772)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F2587", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_G930
+```{bash}
+awk '{f="Epibacterium_mobile_G930_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_G930.gbff
+grep -R "NZ_LNWU01000010.1" | head -n 1 # Epibacterium_mobile_G930_3.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_G930/Epibacterium_mobile_G930_3.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_G930/B11_region3_1_v_Epibacterium_mobile_G930.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(375490, 452651)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile G930", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_NBRC101030
+```{bash}
+awk '{f="Epibacterium_mobile_NBRC101030_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_NBRC101030.gbff
+grep -R "NZ_LNWY01000006.1" | head -n 1 # Epibacterium_mobile_NBRC101030_57.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_NBRC101030/Epibacterium_mobile_NBRC101030_57.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_NBRC101030/B11_region3_1_v_Epibacterium_mobile_NBRC101030.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(9548, 86709)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile NBRC101030", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S1358
+```{bash}
+awk '{f="Epibacterium_mobile_S1358_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S1358.gbff
+grep -R "NZ_LNXA01000004.1" | head -n 1 # Epibacterium_mobile_S1358_35.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S1358/Epibacterium_mobile_S1358_35.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S1358/B11_region3_1_v_Epibacterium_mobile_S1358.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(258611, 335772)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S1358", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S1611
+```{bash}
+awk '{f="Epibacterium_mobile_S1611_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S1611.gbff
+grep -R "NZ_LNXC01000003.1" | head -n 1 # Epibacterium_mobile_S1611_24.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S1611/Epibacterium_mobile_S1611_24.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S1611/B11_region3_1_v_Epibacterium_mobile_S1611.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(258611, 335772)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S1611", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S1847
+```{bash}
+awk '{f="Epibacterium_mobile_S1847_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S1847.gbff
+grep -R "NZ_LNXE01000004.1" | head -n 1 # Epibacterium_mobile_S1847_35.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S1847/Epibacterium_mobile_S1847_35.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S1847/B11_region3_1_v_Epibacterium_mobile_S1847.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(375490, 452651)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S1847", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F2368
+```{bash}
+awk '{f="Epibacterium_mobile_F2368_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F2368.gbff
+grep -R "NZ_LNWB01000002.1" | head -n 1 # Epibacterium_mobile_F2368_13.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F2368/Epibacterium_mobile_F2368_13.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F2368/B11_region3_1_v_Epibacterium_mobile_F2368.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(131147, 208312)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F2368", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F3629
+```{bash}
+awk '{f="Epibacterium_mobile_F3629_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F3629.gbff
+grep -R "NZ_LNXQ01000004.1" | head -n 1 # Epibacterium_mobile_F3629_35.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F3629/Epibacterium_mobile_F3629_35.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F3629/B11_region3_1_v_Epibacterium_mobile_F3629.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(131147, 208312)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F3629", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_G1302
+```{bash}
+awk '{f="Epibacterium_mobile_G1302_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_G1302.gbff
+grep -R "NZ_LNWR01000017.1" | head -n 1 # Epibacterium_mobile_G1302_10.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_G1302/Epibacterium_mobile_G1302_10.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_G1302/B11_region3_1_v_Epibacterium_mobile_G1302.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(40541, 117706)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile G1302", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_G1303
+```{bash}
+awk '{f="Epibacterium_mobile_G1303_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_G1303.gbff
+grep -R "NZ_LNWS01000001.1" | head -n 1 # Epibacterium_mobile_G1303_2.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_G1303/Epibacterium_mobile_G1303_2.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_G1303/B11_region3_1_v_Epibacterium_mobile_G1303.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(131147, 208312)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile G1303", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_G759
+```{bash}
+awk '{f="Epibacterium_mobile_G759_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_G759.gbff
+grep -R "NZ_LNWT01000002.1" | head -n 1 # Epibacterium_mobile_G759_13.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_G759/Epibacterium_mobile_G759_13.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_G759/B11_region3_1_v_Epibacterium_mobile_G759.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(40540, 117705)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile G759", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_G946
+```{bash}
+awk '{f="Epibacterium_mobile_G946_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_G946.gbff
+grep -R "NZ_LNWV01000003.1" | head -n 1 # Epibacterium_mobile_G946_24.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_G946/Epibacterium_mobile_G946_24.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_G946/B11_region3_1_v_Epibacterium_mobile_G946.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(131147, 208312)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile G946", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S1424
+```{bash}
+awk '{f="Epibacterium_mobile_S1424_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S1424.gbff
+grep -R "NZ_LNXB01000010.1" | head -n 1 # Epibacterium_mobile_S1424_3.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S1424/Epibacterium_mobile_S1424_3.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S1424/B11_region3_1_v_Epibacterium_mobile_S1424.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(131147, 208312)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S1425", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S1425
+```{bash}
+awk '{f="Epibacterium_mobile_S1425_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S1425.gbff
+grep -R "NZ_LNXR01000003.1" | head -n 1 # Epibacterium_mobile_S1425_24.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S1425/Epibacterium_mobile_S1425_24.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S1425/B11_region3_1_v_Epibacterium_mobile_S1425.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(131147, 208312)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S1425", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S2144
+```{bash}
+awk '{f="Epibacterium_mobile_S2144_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S2144.gbff
+grep -R "NZ_LNXG01000001.1" | head -n 1 # Epibacterium_mobile_S2144_2.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S2144/Epibacterium_mobile_S2144_2.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S2144/B11_region3_1_v_Epibacterium_mobile_S2144.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(490945, 568110)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S2144", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S2405
+```{bash}
+awk '{f="Epibacterium_mobile_S2405_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S2405.gbff
+grep -R "NZ_LNXH01000002.1" | head -n 1 # Epibacterium_mobile_S2405_13.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S2405/Epibacterium_mobile_S2405_13.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S2405/B11_region3_1_v_Epibacterium_mobile_S2405.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(61183, 138348)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S2405", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S4732
+```{bash}
+awk '{f="Epibacterium_mobile_S4732_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S4732.gbff
+grep -R "NZ_LNXP01000001.1" | head -n 1 # Epibacterium_mobile_S4732_2.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S4732/Epibacterium_mobile_S4732_2.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S4732/B11_region3_1_v_Epibacterium_mobile_S4732.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(894249, 971414)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S4732", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F1926
+```{bash}
+awk '{f="Epibacterium_mobile_F1926_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F1926.gbff
+grep -R "NZ_CP015230.1" | head -n 1 # Epibacterium_mobile_F1926_2.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F1926/Epibacterium_mobile_F1926_2.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F1926/B11_region3_1_v_Epibacterium_mobile_F1926.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(2407366, 2484536)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F1926", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F2158
+```{bash}
+awk '{f="Epibacterium_mobile_F2158_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F2158.gbff
+grep -R "NZ_LNWA01000003.1" | head -n 1 # Epibacterium_mobile_F2158_24.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F2158/Epibacterium_mobile_F2158_24.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F2158/B11_region3_1_v_Epibacterium_mobile_F2158.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(62303, 139473)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F2158", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F2488
+```{bash}
+awk '{f="Epibacterium_mobile_F2488_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F2488.gbff
+grep -R "NZ_LNWD01000010.1" | head -n 1 # Epibacterium_mobile_F2488_3.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F2488/Epibacterium_mobile_F2488_3.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F2488/B11_region3_1_v_Epibacterium_mobile_F2488.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(35007, 112177)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F2488", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F2596
+```{bash}
+awk '{f="Epibacterium_mobile_F2596_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F2596.gbff
+grep -R "NZ_LNWF01000013.1" | head -n 1 # Epibacterium_mobile_F2596_6.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F2596/Epibacterium_mobile_F2596_6.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F2596/B11_region3_1_v_Epibacterium_mobile_F2596.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(130964, 208134)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F2596", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F2630
+```{bash}
+awk '{f="Epibacterium_mobile_F2630_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F2630.gbff
+grep -R "NZ_LNWG01000034.1" | head -n 1 # Epibacterium_mobile_F2630_29.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F2630/Epibacterium_mobile_F2630_29.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F2630/B11_region3_1_v_Epibacterium_mobile_F2630.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(116773, 193943)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F2630", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F3184
+```{bash}
+awk '{f="Epibacterium_mobile_F3184_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F3184.gbff
+grep -R "NZ_LNWI01000016.1" | head -n 1 # Epibacterium_mobile_F3184_9.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F3184/Epibacterium_mobile_F3184_9.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F3184/B11_region3_1_v_Epibacterium_mobile_F3184.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(111063, 188233)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F3184", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F3269
+```{bash}
+awk '{f="Epibacterium_mobile_F3269_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F3269.gbff
+grep -R "NZ_LNWL01000005.1" | head -n 1 # Epibacterium_mobile_F3269_45.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F3269/Epibacterium_mobile_F3269_45.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F3269/B11_region3_1_v_Epibacterium_mobile_F3269.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(130568, 207738)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F3269", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F3329
+```{bash}
+awk '{f="Epibacterium_mobile_F3329_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F3329.gbff
+grep -R "NZ_LNWJ01000022.1" | head -n 1 # Epibacterium_mobile_F3329_16.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F3329/Epibacterium_mobile_F3329_16.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F3329/B11_region3_1_v_Epibacterium_mobile_F3329.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(131332, 208502)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F3329", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F3480
+```{bash}
+awk '{f="Epibacterium_mobile_F3480_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F3480.gbff
+grep -R "NZ_LNWK01000008.1" | head -n 1 # Epibacterium_mobile_F3480_68.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F3480/Epibacterium_mobile_F3480_68.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F3480/B11_region3_1_v_Epibacterium_mobile_F3480.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(130790, 207960)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F3480", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F3688
+```{bash}
+awk '{f="Epibacterium_mobile_F3688_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F3688.gbff
+grep -R "NZ_LNWM01000007.1" | head -n 1 # Epibacterium_mobile_F3688_64.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F3688/Epibacterium_mobile_F3688_64.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F3688/B11_region3_1_v_Epibacterium_mobile_F3688.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(111063, 188233)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F3688", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F3697
+```{bash}
+awk '{f="Epibacterium_mobile_F3697_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F3697.gbff
+grep -R "NZ_LNWN01000003.1" | head -n 1 # Epibacterium_mobile_F3697_24.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F3697/Epibacterium_mobile_F3697_24.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F3697/B11_region3_1_v_Epibacterium_mobile_F3697.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(130631, 207801)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F3697", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F3801
+```{bash}
+awk '{f="Epibacterium_mobile_F3801_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F3801.gbff
+grep -R "NZ_LNWO01000017.1" | head -n 1 # Epibacterium_mobile_F3801_10.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F3801/Epibacterium_mobile_F3801_10.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F3801/B11_region3_1_v_Epibacterium_mobile_F3801.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(131005, 208175)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F3801", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F3871
+```{bash}
+awk '{f="Epibacterium_mobile_F3871_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F3871.gbff
+grep -R "NZ_LNWP01000006.1" | head -n 1 # Epibacterium_mobile_F3871_57.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F3871/Epibacterium_mobile_F3871_57.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F3871/B11_region3_1_v_Epibacterium_mobile_F3871.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(111063, 188233)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F3871", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_F4122
+```{bash}
+awk '{f="Epibacterium_mobile_F4122_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_F4122.gbff
+grep -R "NZ_LNWQ01000010.1" | head -n 1 # Epibacterium_mobile_F4122_3.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_F4122/Epibacterium_mobile_F4122_3.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_F4122/B11_region3_1_v_Epibacterium_mobile_F4122.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(131688, 208858)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile F4122", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S1689
+```{bash}
+awk '{f="Epibacterium_mobile_S1689_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S1689.gbff
+grep -R "NZ_LNXD01000003.1" | head -n 1 # Epibacterium_mobile_S1689_24.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S1689/Epibacterium_mobile_S1689_24.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S1689/B11_region3_1_v_Epibacterium_mobile_S1689.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(111063, 188233)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S1689", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S1923
+```{bash}
+awk '{f="Epibacterium_mobile_S1923_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S1923.gbff
+grep -R "NZ_LNXF01000013.1" | head -n 1 # Epibacterium_mobile_S1923_6.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S1923/Epibacterium_mobile_S1923_6.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S1923/B11_region3_1_v_Epibacterium_mobile_S1923.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(111063, 188233)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S1923", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S1942
+```{bash}
+awk '{f="Epibacterium_mobile_S1942_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S1942.gbff
+grep -R "NZ_JXYG01000005.1" | head -n 1 # Epibacterium_mobile_S1942_6.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S1942/Epibacterium_mobile_S1942_6.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S1942/B11_region3_1_v_Epibacterium_mobile_S1942.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(130566, 207736)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S1942", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S2608
+```{bash}
+awk '{f="Epibacterium_mobile_S2608_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S2608.gbff
+grep -R "NZ_LNXI01000010.1" | head -n 1 # Epibacterium_mobile_S2608_3.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S2608/Epibacterium_mobile_S2608_3.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S2608/B11_region3_1_v_Epibacterium_mobile_S2608.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(131464, 208634)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S2608", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S2684
+```{bash}
+awk '{f="Epibacterium_mobile_S2684_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S2684.gbff
+grep -R "NZ_LNXJ01000027.1" | head -n 1 # Epibacterium_mobile_S2684_21.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S2684/Epibacterium_mobile_S2684_21.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S2684/B11_region3_1_v_Epibacterium_mobile_S2684.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(130599, 207769)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S2684", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S3584
+```{bash}
+awk '{f="Epibacterium_mobile_S3584_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S3584.gbff
+grep -R "NZ_LNXK01000019.1" | head -n 1 # Epibacterium_mobile_S3584_12.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S3584/Epibacterium_mobile_S3584_12.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S3584/B11_region3_1_v_Epibacterium_mobile_S3584.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(111063, 188233)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S3584", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S3585
+```{bash}
+awk '{f="Epibacterium_mobile_S3585_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S3585.gbff
+grep -R "NZ_LNXL01000016.1" | head -n 1 # Epibacterium_mobile_S3585_9.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S3585/Epibacterium_mobile_S3585_9.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S3585/B11_region3_1_v_Epibacterium_mobile_S3585.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(111063, 188233)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S3585", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S3899
+```{bash}
+awk '{f="Epibacterium_mobile_S3899_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S3899.gbff
+grep -R "NZ_LNXM01000023.1" | head -n 1 # Epibacterium_mobile_S3899_17.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S3899/Epibacterium_mobile_S3899_17.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S3899/B11_region3_1_v_Epibacterium_mobile_S3899.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(111063, 188233)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S3899", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S3903
+```{bash}
+awk '{f="Epibacterium_mobile_S3903_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S3903.gbff
+grep -R "NZ_LNXN01000007.1" | head -n 1 # Epibacterium_mobile_S3903_58.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S3903/Epibacterium_mobile_S3903_58.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S3903/B11_region3_1_v_Epibacterium_mobile_S3903.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(111064, 188234)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S3903", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_mobile_S3940
+```{bash}
+awk '{f="Epibacterium_mobile_S3940_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_S3940.gbff
+grep -R "NZ_LNXO01000021.1" | head -n 1 # Epibacterium_mobile_S3940_15.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_mobile_S3940/Epibacterium_mobile_S3940_15.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_mobile_S3940/B11_region3_1_v_Epibacterium_mobile_S3940.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(111063, 188233)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile S3940", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_sp__SM1969_SM1969 (should be a very poor match)
+```{bash}
+awk '{f="Epibacterium_sp__SM1969_SM1969_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_sp__SM1969_SM1969.gbff
+grep -R "NZ_WIXK01000005.1" | head -n 1 # Epibacterium_sp__SM1969_SM1969_25.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_sp__SM1969_SM1969/Epibacterium_sp__SM1969_SM1969_25.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_sp__SM1969_SM1969/B11_region3_1_v_Epibacterium_sp__SM1969_SM1969.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(8947, 31098)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. sp. SM1969_SM1969", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+\
+Epibacterium_ulvae_U95 (should be a very poor match)
+```{bash}
+awk '{f="Epibacterium_ulvae_U95_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_ulvae_U95.gbff
+grep -R "NZ_PHJF01000003.1" | head -n 1 # Epibacterium_ulvae_U95_4.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Epibacterium_ulvae_U95/Epibacterium_ulvae_U95_4.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Epibacterium_ulvae_U95/B11_region3_1_v_Epibacterium_ulvae_U95.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(132138, 212171)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. ulvae U95", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+copy these files to my location, and name them BASENAME_protein.faa
+Mueller_Lab/RSM/pbx/B11/comp_genome/datasets/Epibacterium_mobile/ncbi_dataset/data/GCF_900574125.1/protein.faa
+
+
+```{bash}
+# make db, from within Epibact_genomes:
+nano mkblast.sh
+for f in *.faa; do makeblastdb -in $f -dbtype prot -out $(basename $f .faa); done
+
+nano mkblastpin.sh
+
+for f in *.pin; do blastall -p blastp -i region3_1.faa -d $(basename $f .pin) -m 8 -b 1 -o B11_region3_1$(basename $f .pin).out; done
+
+# .pin comes from the blastdb step
+```
+Then parse blast outputs when we come to it.
+
+
+For each ".out" file (blastp results) comparing B11's region 3.1 to an existing genome, go through that file.
+
+build all_proteins file
+```{bash}
+cat /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/datasets/*/*/*/*/protein.faa /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/genomes/current_pbx/filtered_reads/B11test/B11_prokkas/B11.faa > Epi_proteins.faa
+```
+Run the gene comparison 
+```{bash}
+nano genecompare.sh
+while read line
+do
+  for f in *.out; do grep $line $f | cut -f 2 >> $line.logs.list ; done
+  screen_list.pl $line.logs.list Epi_proteins.faa keep > $line.logs.faa
+  clustalo -i $line.logs.faa -o $line.logs.align.faa
+  hmmbuild $line.logs.hmm $line.logs.align.faa
+done < $1
+# adding B11
+while read line
+do
+  echo $line > $line.logs.list
+  for f in *.out; do grep $line $f | cut -f 2 >> $line.logs.list ; done
+  screen_list.pl $line.logs.list Epi_proteins.faa keep > $line.logs.faa
+  clustalo -i $line.logs.faa -o $line.logs.align.faa
+  hmmbuild $line.logs.hmm $line.logs.align.faa
+done < $1
+ #NOTE: the “>” in echo will create new files, so as to not keep appending to existing files
+```
+
+Hmmsearch
+```{bash}
+nano hmmsearch.sh 
+#!/bin/bash
+for f in *.hmm; do hmmsearch -o $(basename $f .logs.hmm).out $f ../database/uniprot_sprot.fasta; done
+```
+
+BlastX
+```{bash}
+for f in *.pin; do blastall -p blastx -i Epibacterium_mobile_PBX_B11_region3_1.faa -d $(basename $f .pin) -m 8 -b 1 -o B11_region3_1$(basename $f .pin).blastx.out; done
+```
+
+Adding Reugeria TM1040: GCA_000014065.1
+```{bash}
+datasets assembly-descriptors accession GCA_000014065.1
+mkdir Epibacterium_multivorans_CECT7557
+cd Epibacterium_multivorans_CECT7557
+datasets download assembly GCA_000014065.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Ruegeria_sp_TM1040.zip
+unzip Ruegeria_sp_TM1040.zip
+```
+Use “makeblastdb” on the assembly fasta (GCA_000014065.1_ASM1406v1_genomic.fna), then point the blast command to that location for the -d option. 
+```{bash}
+makeblastdb -in /dfs//Mueller_Lab/mk/comp_genome/Ruegeria_sp_TM1040/ncbi_dataset/data/GCA_000014065.1/GCA_000014065.1_ASM1406v1_genomic.fna -dbtype nucl -out Ruegeria_sp_TM1040_genomic.fna
+
+blastall -p blastn -i /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11_region3_1.fna -d Ruegeria_sp_TM1040_genomic.fna -o B11_region3_1_v_Ruegeria_sp_TM1040.out -e 1e-10 -m 8 -b 1
+
+m8_coord_adj.rb /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11.gff B11_region3_1_v_Ruegeria_sp_TM1040.out 0.00001 > B11_region3_1_v_Ruegeria_sp_TM1040.adj.out
+# adjust the coordinates from the gene specific start and stop to the contig coordinate start and stop and filter out alignments that are < .001% of gene length (user defined threshold)
+
+nano coords.sh
+for f in *.adj.out; do cut -f 2 $f | sort -u > $(basename $f .adj.out).subject_ID.txt; done
+for f in *.adj.out; do echo $(basename $f .adj.out) >> query_ref.txt; sort -k 7 -n $f | head -n 1 | awk -F "\t" '{if ($7 < $8) {print $7} else {print $8} }' >> query_start.txt; sort -k 7 -nr $f | head -n 1 | awk -F "\t" '{if ($7 > $8) {print $7} else {print $8} }' >> query_end.txt; sort -k 9 -n $f | head -n 1 | awk -F "\t" '{if ($9 < $10) {print $9} else {print $10} }' >> ref_start.txt; sort -k 9 -nr $f | head -n 1 | awk -F "\t" '{if ($9 > $10) {print $9} else {print $10} }' >> ref_end.txt; done
+paste query_ref.txt query_start.txt query_end.txt ref_start.txt ref_end.txt > coordinate_info.txt
+
+bash coords.sh
+
+```
+Coordinates
+Q: 167888-230710
+S: 1534042-2577865 (+- 10000: 1524042-2587865)
+Subject ID: CP000377.1
+```{bash}
+awk '{f="Ruegeria_sp_TM1040_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/mk/comp_genome/Ruegeria_sp_TM1040/ncbi_dataset/data/GCA_000014065.1/genomic.gbff
+grep -R "CP000377.1" | head -n 1 # Ruegeria_sp_TM1040_2.gb
+```
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Comp_genome/Ruegeria_sp_TM1040/Ruegeria_sp_TM1040_2.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Comp_genome/Ruegeria_sp_TM1040/B11_region3_1_v_Ruegeria_sp_TM1040.adj.out")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(2500000,2587865)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. Ruegeria_sp_TM1040", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+
+Epibacterium mobile BBCC367: GCA_900574125.1
+```{bash}
+datasets assembly-descriptors accession GCA_900574125.1
+mkdir Epibacterium_mobile_BBCC367
+cd Epibacterium_mobile_BBCC367
+datasets download assembly GCA_900574125.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Epibacterium_mobile_BBCC367.zip
+unzip Epibacterium_mobile_BBCC367.zip
+
+makeblastdb -in /dfs//Mueller_Lab/mk/comp_genome/Epibacterium_mobile_BBCC367/ncbi_dataset/data/GCA_900574125.1/GCA_900574125.1_EPIB_assembly_I_genomic.fna -dbtype nucl -out Epibacterium_mobile_BBCC367_genomic.fna
+
+blastall -p blastn -i /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11_region3_1.fna -d Epibacterium_mobile_BBCC367_genomic.fna -o B11_region3_1_v_Epibacterium_mobile_BBCC367.out -e 1e-10 -m 8 -b 1
+
+m8_coord_adj.rb /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11.gff B11_region3_1_v_Epibacterium_mobile_BBCC367.out 0.00001 > B11_region3_1_v_Epibacterium_mobile_BBCC367.out.adj
+
+```
+Coordinates
+Q: 165944-230710	
+S: 1471302-2647531
+Subject ID: LR027553.1
+
+```{bash}
+awk '{f="Epibacterium_mobile_BBCC367_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/mk/comp_genome/Epibacterium_mobile_BBCC367/ncbi_dataset/data/GCA_900574125.1/genomic.gbff
+grep -R "LR027553.1" | head -n 1 # Epibacterium_mobile_BBCC367_2.gb
+```
+
+```{r, warning = FALSE, message = FALSE, results = "hide"}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Comp_genome/Epibacterium_mobile_BBCC367/Epibacterium_mobile_BBCC367_2.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Comp_genome/Epibacterium_mobile_BBCC367/B11_region3_1_v_Epibacterium_mobile_BBCC367.adj.out")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(2570000,2657531)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. E. mobile BBCC367", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+
+Adding another genome, Rhodobacterales bacterium Y4I, because it produces an antimicrobial called indigo girls. indigoidine. whatever
+```{bash}
+datasets download assembly GCA_000156135.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Rhodobacterales_bacterium_Y4I.zip
+
+makeblastdb -in /dfs//Mueller_Lab/mk/comp_genome/Rhodobacterales_bacterium_Y4I/ncbi_dataset/data/GCA_000156135.1/unplaced.scaf.fna -dbtype nucl -out Rhodobacterales_bacterium_Y4I_genomic.fna
+
+blastall -p blastn -i /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11_region3_1.fna -d Rhodobacterales_bacterium_Y4I_genomic.fna -o B11_region3_1_v_Rhodobacterales_bacterium_Y4I.out -e 1e-10 -m 8 -b 1
+
+m8_coord_adj.rb /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11.gff B11_region3_1_v_Rhodobacterales_bacterium_Y4I.out 0.00001 > B11_region3_1_v_Rhodobacterales_bacterium_Y4I.out.adj
+
+awk '{f="Rhodobacterales_bacterium_Y4I_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/mk/comp_genome/Rhodobacterales_bacterium_Y4I/ncbi_dataset/data/GCA_000156135.1/genomic.gbff
+
+```
+```{r}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Comp_genome/Rhodobacterales_bacterium_Y4I/Rhodobacterales_bacterium_Y4I_6.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Comp_genome/Rhodobacterales_bacterium_Y4I/B11_region3_1_v_Rhodobacterales_bacterium_Y4I.out.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(300000,3250000)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. Rhodobacterales bacterium Y4I", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+
+# zooming in on first cluster
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(510000,610000)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. Rhodobacterales bacterium Y4I", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+
+# second  cluster (blue one)
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(510000,650000)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. Rhodobacterales bacterium Y4I", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+
+```
+
+Adding Phaeobacter gallaeciensis / inhibens 2.10
+```{bash}
+datasets assembly-descriptors accession GCA_000154745.2
+mkdir Phaeobacter_inhibens_2.10
+datasets download assembly GCA_000154745.2 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_2.10.zip
+
+makeblastdb -in /dfs//Mueller_Lab/mk/comp_genome/Phaeobacter_inhibens_2.10/ncbi_dataset/data/GCA_000154745.2/GCA_000154745.2_ASM15474v2_genomic.fna -dbtype nucl -out Phaeobacter_inhibens_2.10_genomic.fna
+
+blastall -p blastn -i /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11_region3_1.fna -d Phaeobacter_inhibens_2.10_genomic.fna -o B11_region3_1_v_Phaeobacter_inhibens_2.10.out -e 1e-10 -m 8 -b 1
+
+m8_coord_adj.rb /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11.gff B11_region3_1_v_Phaeobacter_inhibens_2.10.out 0.00001 > B11_region3_1_v_Phaeobacter_inhibens_2.10.out.adj
+
+awk '{f="Phaeobacter_inhibens_2.10_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/mk/comp_genome/Phaeobacter_inhibens_2.10/ncbi_dataset/data/GCA_000154745.2/genomic.gbff
+```
+```{r}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Comp_genome/Phaeobacter_inhibens_2.10/Phaeobacter_inhibens_2.10_2.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Comp_genome/Phaeobacter_inhibens_2.10/B11_region3_1_v_Phaeobacter_inhibens_2.10.out.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(300000,3250000)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. Phaeobacter inhibens 2.10", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+
+# zoom in
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(500000,600000)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. Phaeobacter inhibens 2.10", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+
+AMP Investigation
+Daptomycin, an AMP used in pharmacy GCA_000156455.1
+```{bash}
+datasets download assembly GCA_000156455.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Streptomyces_roseosprous_NRRL15998.zip
+
+```
+GCA_001039275.2
+```{bash}
+datasets download assembly GCA_001039275.2 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Brevibacillus_brevis_DZQ7.zip
+prokka -outdir Brevibacillus_brevis_prokka -prefix B.brevis -locustag n /dfs//Mueller_Lab/mk/comp_genome/AMPs/Brevibacillus_brevis_DZQ7/ncbi_dataset/data/GCA_001039275.2/GCA_001039275.2_ASM103927v2_genomic.fna
+```
+
+Look into that other fun genome T5
+```{bash}
+datasets assembly-descriptors accession GCA_000473105.1
+mkdir Phaeobacter_inhibens_T5
+cd Phaeobacter_inhibens_T5
+datasets download assembly GCA_000473105.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_T5.zip
+unzip Phaeobacter_inhibens_T5.zip
+
+# six chromosomes
+awk -F "|" '/^>/ {close(F) ; F = $1".fna"} {print >> F}' unplaced.scaf.fna
+# 1
+fastANI -q /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/genomes/current_pbx/filtered_reads/B11test/B11_scaffolds.long.fna -r /dfs/Mueller_Lab/mk/comp_genome/AMPs/Phaeobacter_inhibens_T5/ncbi_dataset/data/GCA_000473105.1/scaffold1.fna -o B11_vs_PI_T5_scaf1 --visualize
+
+Rscript /Users/marykenglish/Documents/Oyster_Project/phaeobacter_t5/visualizet5.R /Users/marykenglish/Documents/Oyster_Project/phaeobacter_t5/B11_scaffolds.long.fna /Users/marykenglish/Documents/Oyster_Project/phaeobacter_t5/scaffold1.fna /Users/marykenglish/Documents/Oyster_Project/phaeobacter_t5/B11_vs_PI_T5_scaf1.visual
+# blast Phaeobacter inhibens t5 against B11 and se what they have in common!
+makeblastdb -in scaffolds.fa -input_type fasta -dbtype nucl -out p_inhibens_t5_db
+
+blastn -db /dfs/Mueller_Lab/mk/comp_genome/AMPs/Phaeobacter_inhibens_T5/p_inhibens_t5_db -query /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/genomes/current_pbx/filtered_reads/B11test/B11_prokkas/B11.fna -out /dfs/Mueller_Lab/mk/comp_genome/AMPs/Phaeobacter_inhibens_T5_vs_B11.out -outfmt 6
+
+sort -u -g -k11,11 Phaeobacter_inhibens_T5_vs_B11.out | awk '$11<0.001' | uniq -f1 -u > B11_vs_phaeobacter_t5.tsv
+sort -u -g -k11,11 Phaeobacter_inhibens_T5_vs_B11.out | awk '$11<0.001' | uniq 
+
+# general format
+fastANI \
+-q /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/genomes/current_pbx/filtered_reads/B11test/B11_scaffolds.long.fna \
+-r ../Epibacterium_scottomollicae_DSM25328/ncbi_dataset/data/GCF_003003215.1/GCF_003003215.1_ASM300321v1_genomic.fna \
+-o B11_vs_DSM25328 --visualize
+```
+24 genomes to download:
+~P. inhibens p54 GCA_002892185.1~
+~p66 GCA_002892065.1~
+~p88 GCA_002892085.1~
+~p10 GCA_002888685.1~
+~p80 GCA_002892145.1~
+~p83 GCA_002892225.1~
+~DSM 17395 GCA_000154765.2~
+~p72 GCA_002891945.1~
+~bs107 GCA_003443575.1~
+~2.10mf GCA_000154745.2~
+~2.10nsw GCA_003443555.1~
+~p74 GCA_002892045.1~
+~p92 GCA_002892025.1~
+~p70 GCA_002892125.1~
+~p48 GCA_002892265.1~
+~p59 GCA_002892165.1~
+~DOK1-1 GCA_001969345.1~
+~p24 GCA_002891665.1~
+~p30 GCA_002892205.1~
+~p51 GCA_002891985.1~
+~p57 GCA_002892005.1~
+~p78 GCA_002891965.1~
+~t5 AKA DSM 16374 GCA_000473105.1~
+~s4sm GCA_001559785.1~
+
+```{bash}
+# General format
+datasets assembly-descriptors accession
+mkdir Phaeobacter_inhibens_
+datasets download assembly XXX --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename XXX.zip
+
+mkdir Phaeobacter_inhibens_p54
+datasets download assembly GCA_002892185.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p54.zip
+
+mkdir Phaeobacter_inhibens_p66
+datasets download assembly GCA_002892065.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p66.zip
+
+mkdir Phaeobacter_inhibens_p88
+datasets download assembly GCA_002892085.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p88.zip
+
+mkdir Phaeobacter_inhibens_p10
+datasets download assembly GCA_002888685.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p10.zip
+
+mkdir Phaeobacter_inhibens_p80
+datasets download assembly GCA_002892145.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p80.zip
+
+mkdir Phaeobacter_inhibens_p83
+datasets download assembly GCA_002892225.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p83.zip
+
+mkdir Phaeobacter_inhibens_DSM17395
+datasets download assembly GCA_000154765.2 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_DSM17395.zip
+
+mkdir Phaeobacter_inhibens_p72
+datasets download assembly GCA_002891945.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p72.zip
+
+mkdir Phaeobacter_inhibens_bs107
+datasets download assembly GCA_003443575.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_bs107.zip
+
+mkdir Phaeobacter_inhibens_2.10nsw
+datasets download assembly GCA_003443555.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_2.10nsw.zip
+
+mkdir Phaeobacter_inhibens_p74
+datasets download assembly GCA_002892045.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p74.zip
+
+mkdir Phaeobacter_inhibens_p92
+datasets download assembly GCA_002892025.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p92.zip
+
+mkdir Phaeobacter_inhibens_p70
+datasets download assembly GCA_002892125.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p70.zip
+
+mkdir Phaeobacter_inhibens_p48
+datasets download assembly GCA_002892265.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p48.zip
+
+mkdir Phaeobacter_inhibens_p59
+datasets download assembly GCA_002892165.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p59.zip
+
+mkdir Phaeobacter_inhibens_dok1-1
+datasets download assembly GCA_001969345.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_dok1-1.zip
+
+mkdir Phaeobacter_inhibens_p24
+datasets download assembly GCA_002891665.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p24.zip
+
+mkdir Phaeobacter_inhibens_p30
+datasets download assembly GCA_002892205.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p30.zip
+
+mkdir Phaeobacter_inhibens_p51
+datasets download assembly GCA_002891985.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p51.zip
+
+mkdir Phaeobacter_inhibens_p57
+datasets download assembly GCA_002892005.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p57.zip
+
+mkdir Phaeobacter_inhibens_p78
+datasets download assembly GCA_002891965.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_p78.zip
+
+mkdir Phaeobacter_inhibens_s4sm
+datasets download assembly GCA_001559785.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_s4sm.zip
+
+
+nano mkblst
+# generic: for f in *.fna; do makeblastdb -in $f -dbtype nucl -out $(basename $f _genomic.fna); done
+for f in Phaeobacter_inhibens_*/ncbi_dataset/data/G*/*.fna; do makeblastdb -in $f -dbtype nucl -out $(basename $f _genomic.fna); done
+
+#ls *_genomic.fna | sed -e 's/_genomic\.fna//g' > genome.list
+
+nano doblst
+for f in /dfs/Mueller_Lab/mk/comp_genome/Phaeobacter_inhibens_genomes/*.nin; do blastall -p blastn -i /dfs/Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11_region3_1.ffn -d /dfs/Mueller_Lab/mk/comp_genome/Phaeobacter_inhibens_genomes/$(basename $f .nin) -o /dfs/Mueller_Lab/mk/comp_genome/Phaeobacter_inhibens_genomes/B11_region3_1_v_$(basename $f .nin).out -e 1e-10 -m 8 -b 1; done
+
+```
+
+
+Now do a bunch of pretty pretty graphs!
+```{bash}
+awk '{f="Epibacterium_mobile_270-3_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/genbank/Epibacterium_mobile_270-3.gbff
+# to find the contig.gb contiaining the subject ID you want
+grep -R "NZ_LNVY01000013.1" ./
+# Epibacterium_mobile_270-3_6.gb
+```
+
+
+
+```{bash}
+datasets assembly-descriptors accession GCA_000154745.2
+mkdir Phaeobacter_inhibens_2.10
+datasets download assembly GCA_000154745.2 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_2.10.zip
+
+makeblastdb -in /dfs//Mueller_Lab/mk/comp_genome/Phaeobacter_inhibens_2.10/ncbi_dataset/data/GCA_000154745.2/GCA_000154745.2_ASM15474v2_genomic.fna -dbtype nucl -out Phaeobacter_inhibens_2.10_genomic.fna
+
+blastall -p blastn -i /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11_region3_1.fna -d Phaeobacter_inhibens_2.10_genomic.fna -o B11_region3_1_v_Phaeobacter_inhibens_2.10.out -e 1e-10 -m 8 -b 1
+
+m8_coord_adj.rb /dfs//Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11.gff B11_region3_1_v_Phaeobacter_inhibens_2.10.out 0.00001 > B11_region3_1_v_Phaeobacter_inhibens_2.10.out.adj
+
+awk '{f="Phaeobacter_inhibens_2.10_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs//Mueller_Lab/mk/comp_genome/Phaeobacter_inhibens_2.10/ncbi_dataset/data/GCA_000154745.2/genomic.gbff
+```
+
+```{r}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Comp_genome/Phaeobacter_inhibens_2.10/Phaeobacter_inhibens_2.10_2.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Comp_genome/Phaeobacter_inhibens_2.10/B11_region3_1_v_Phaeobacter_inhibens_2.10.out.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(300000,3250000)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. Phaeobacter inhibens 2.10", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+
+# zoom in
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(500000,600000)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. Phaeobacter inhibens 2.10", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+
+~P. inhibens p54~
+```{r}
+Ref <- read_dna_seg_from_file(file="~/Desktop/Comp_genome/Phaeobacter_inhibens_p54/Phaeobacter_inhibens_p54.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Comp_genome/Phaeobacter_inhibens_2.10/B11_region3_1_v_Phaeobacter_inhibens_2.10.out.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(300000,3250000)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. Phaeobacter inhibens 2.10", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+
+```
+
+~p66 GCA_002892065.1~
+~p88 GCA_002892085.1~
+~p10 GCA_002888685.1~
+~p80 GCA_002892145.1~
+~p83 GCA_002892225.1~
+~DSM 17395 GCA_000154765.2~
+~p72 GCA_002891945.1~
+~bs107 GCA_003443575.1~
+~2.10mf GCA_000154745.2~
+~2.10nsw GCA_003443555.1~
+~p74 GCA_002892045.1~
+~p92 GCA_002892025.1~
+~p70 GCA_002892125.1~
+~p48 GCA_002892265.1~
+~p59 GCA_002892165.1~
+~DOK1-1 GCA_001969345.1~
+~p24 GCA_002891665.1~
+~p30 GCA_002892205.1~
+~p51 GCA_002891985.1~
+~p57 GCA_002892005.1~
+~p78 GCA_002891965.1~
+~t5 AKA DSM 16374 GCA_000473105.1~
+~s4sm GCA_001559785.1~
+
+To move the gbff files from within the genome folders:
+```{bash}
+
+for f in *.gbff; do mv $f ../$(basename $f _genomic.gbff).gbff; done
+```
+To-do:
+Re-start with T5
+Re-start with other missing ones (2.10mf?)
+
+Start over with T5
+```{bash}
+
+awk '{f="Phaeobacter_inhibens_2.10_" NR ".gb"; print "LOCUS" $0 > f}' RS='LOCUS' /dfs/Mueller_Lab/mk/comp_genome/Phaeobacter_inhibens_2.10/ncbi_dataset/data/GCA_000154745.2/genomic.gbff
+
+# Adding T5
+datasets download assembly GCA_000473105.1 --include-rna --include-gff3 --include-protein --include-seq --include-gbff --filename Phaeobacter_inhibens_T5.zip
+
+makeblastdb -in /dfs/Mueller_Lab/mk/comp_genome/Phaeobacter_inhibens_genomes/Phaeobacter_inhibens_T5/ncbi_dataset/data/GCA_000473105.1/unplaced.scaf.fna -dbtype nucl -out Phaeobacter_inhibens_T5/
+
+
+# Doing blast on all genomes again
+nano doblst.sh
+#!/bin/bash
+for f in /dfs/Mueller_Lab/mk/comp_genome/Phaeobacter_inhibens_genomes/*.nin; do blastall -p blastn -i /dfs/Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11_region3_1.ffn -d /dfs/Mueller_Lab/mk/comp_genome/Phaeobacter_inhibens_genomes/blasts/$(basename $f .nin) -o /dfs/Mueller_Lab/mk/comp_genome/Phaeobacter_inhibens_genomes/blasts/B11_region3_1_v_$(basename $f .nin).out -e 1e-10 -m 8 -b 1; done
+
+./doblst.sh
+
+nano filt_length.sh
+for f in *.out; do m8_coord_adj.rb /dfs/Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11.gff $f 0.00001 > $(basename $f .out).adj; done
+
+./filt_length.sh
+
+nano coords.sh
+for f in *.adj; do cut -f 2 $f | sort -u > $(basename $f .adj).subject_ID.txt; done
+for f in *.adj; do echo $(basename $f .adj) >> query_ref.txt; sort -k 7 -n $f | head -n 1 | awk -F "\t" '{if ($7 < $8) {print $7} else {print $8} }' >> query_start.txt; sort -k 7 -nr $f | head -n 1 | awk -F "\t" '{if ($7 > $8) {print $7} else {print $8} }' >> query_end.txt; sort -k 9 -n $f | head -n 1 | awk -F "\t" '{if ($9 < $10) {print $9} else {print $10} }' >> ref_start.txt; sort -k 9 -nr $f | head -n 1 | awk -F "\t" '{if ($9 > $10) {print $9} else {print $10} }' >> ref_end.txt; done
+paste query_ref.txt query_start.txt query_end.txt ref_start.txt ref_end.txt > coordinate_info.txt
+
+./coords.sh
+```
+
+makeblast db TDA synthesis genes; see if B11 has these
+
+## December 2020
+We want to do a blast comparison to see if any of the genes needed for TDA synthesis in a roseobacter sp. (Geng 2008) are found within the E. mobile B11 genome.
+12 genes ID'd for TDA synthesis
+~4500 genes in B11 genome
+
+1. Get all 12 TDA genes in a single list - multifasta format? Or 12 fasta files?
+
+2. Run a blast comparing those 12 genes against the 4500 in the B11 genome
+```{bash}
+makeblastdb -in tdagenes.faa -dbtype prot -out tdagenesdb
+cd /nfs5/Mueller_Lab/mk/comp_genome/AMPs/tda_genes
+blastp -db /nfs5/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/tdagenesdb -query /nfs5/Mueller_Lab/oyster_probiotics/pacbio/bakta/b11.faa -out /nfs5/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/B11_v_tdagenes.out -outfmt 6
+
+hqsub 'blastp -db /nfs5/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/tdagenesdb -query /nfs5/Mueller_Lab/oyster_probiotics/pacbio/bakta/b11.faa -out /nfs5/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/B11_v_tdagenes.out -outfmt 6' -q micro -p 30 -r b11_all_bakta
+# Gotta redo this with all genetic elements of B11, not just the chosen assembled contigs.
+# First annotate with bakta
+/nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/B11.contigs.fasta
+nano b11_all_bakta.sh
+#!/usr/bin/env bash
+cd /nfs5/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/b11_all_contigs
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/conda-envs/envs/bakta/activate.sh
+/local/cluster/bin/bakta --prefix b11 --keep-contig-headers --genus Tritonibacter --output /nfs5/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/b11_all_contigs/annots --force  --threads 30 /nfs5/Mueller_Lab/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/B11.contigs.fasta
+
+hqsub '/nfs5/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/b11_all_contigs/b11_all_bakta.sh' -q micro -p 30 -r b11_all_bakta
+
+# then run a blast on the new .faa file
+hqsub  'blastp -db /nfs5/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/tdagenesdb -query /nfs5/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/b11_all_contigs/annots/b11.faa -out /nfs5/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/all_B11_v_tdagenes.out -outfmt 6' -q micro -p 30 -r b11_all_blastp
+
+awk '$11<0.001{print $0}' all_B11_v_tdagenes.out | sort -n -u -k11,11 > all_tda_genes_uniq_by_eval.tsv
+# sort by column 12 (e-value)
+# take top 3 hits
+awk '$11<0.001{print $0}' all_B11_v_tdagenes.out | sort -n -k 11,11 | sort -u -k 2,2 | uniq -f1 > all_tda_genes_uniq_by_eval.tsv
+#sort -u -g -k11,11 B11_v_tdagenes.out | awk '$11<0.001{print $0}' > tda_genes_uniq_by_eval.tsv
+
+awk '$11<0.001{print $0}' B11_v_tdagenes.out | sort -n -u -k11,11 > tda_genes_uniq_by_eval.tsv
+
+awk '$11<0.001{print $0}' B11_v_tdagenes.out | sort -u -k2,2 > test.tsv
+
+awk '$11<0.001{print $0}' B11_v_tdagenes.out | sort -n -k 11,11 | uniq -f1 | head
+
+awk '$11<0.001{print $0}' B11_v_tdagenes.out | sort -n -k 11,11 | sort -u -k 1,1 > tda_genes_uniq_by_eval.tsv
+
+awk '$11<0.001{print $0}' B11_v_tdagenes.out | sort -n -k 11,11 | sort -u -k 2,2 | uniq -f1 > tda_genes_uniq_by_eval.tsv
+```
+Even with the non-genuine contigs added, there is no indication of an operon (no genes together). This may be because the DNA kit we used didn't do plasmids. In that case, build hmm models to search for the genes that are NOT on the plasmid.
+
+I made a list of documented TDA-producing genes from Tritonibacter AK171, and I'm going to search for these 14 genes in my genome (all contigs).
+```{bash}
+hqsub 'makeblastdb -in Trit_TDA_genes.faa -dbtype prot -out tritgenesdb' -q micro -p 30 -r trit_dbbuild
+hqsub 'blastp -db /nfs5/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/tritgenesdb -query /nfs5/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/b11_all_contigs/annots/b11.faa -out /nfs5/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/all_B11_v_Trit.out -outfmt 6' -q micro -p 30 -r b11_all_trit_blastp
+awk '$11<0.001{print $0}' all_B11_v_Trit.out | sort -n -u -k11,11 | sort -u -k 2,2 > all_B11_v_Trit_eval.tsv
+```
+Looking for AmpR with a HMM model, since the pident in blastp was so low.
+```{bash}
+clustalo -i ampR.faa -o ampR.align.faa
+/local/cluster/hmmer/bin/hmmbuild ampR.hmm ampR.align.faa
+/local/cluster/hmmer/bin/hmmsearch --tblout ampR_b11.out ampR.hmm /nfs5/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/b11_all_contigs/annots/b11.faa
+```
+
+Doing an all-vs-all blast with the Tritonibacter genome and the B11 raw reads. There are 1341 contigs, some with 1 read.
+```{bash}
+cat B11.contigs.fasta B11.unassembled.fasta > B11_all_bp.fasta
+#download tritonibacter genome
+datasets download genome accession GCF_030127025.1 --include cds,genome --filename trit_ncbi.zip
+# Make a database with B11
+makeblastdb -in /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/B11_all_bp.fasta -dbtype nucl -out b11_all_db
+blastn -db /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/b11_all_db -query /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/ncbi_dataset/data/GCF_030127025.1/cds_from_genomic.fna -out trit_vs_b11.out -evalue 1e-10 -outfmt 6 -num_threads 20
+# and vice versa
+makeblastdb -in /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/ncbi_dataset/data/GCF_030127025.1/cds_from_genomic.fna -dbtype nucl -out trit_db
+
+blastn -db /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/trit_db -query /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/B11_all_bp.fasta -out b11_vs_trit.out -evalue 1e-10 -outfmt 6 -num_threads 20
+```
+Sort files.
+```{bash}
+sort -k 12,12 trit_vs_b11.out | head
+```
+
+
+Am I doing this backwards?
+```{bash}
+mkdir reverse
+makeblastdb -in /nfs0/Mueller_Lab/sequence_databases/oyster_probiotics/genomes/current_pbx/filtered_reads/B11test/B11_prokkas/B11.faa -dbtype prot -out B11db
+
+blastp -db /dfs/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/reverse/B11db -query /dfs/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/tdagenes.faa -out /dfs/Mueller_Lab/mk/comp_genome/AMPs/tda_genes/tdagenes_v_B11.out -outfmt 6
+
+awk '$11<0.001{print $0}' tdagenes_v_B11.out | sort -u -k1,1 > tda_genes_reverse_uniq_by_eval.tsv
+```
+
+
+Seeing if P. inhibens T5 has region 3.1 by using blast.
+  s: T5
+  q: 3.1
+
+```{bash}
+makeblastdb -in /dfs/Mueller_Lab/mk/comp_genome/Phaeobacter_inhibens_genomes/Phaeobacter_inhibens_T5/ncbi_dataset/data/GCA_000473105.1/unplaced.scaf.fna -dbtype nucl -out T5db 
+
+blastn -db /dfs/Mueller_Lab/mk/comp_genome/Phaeobacter_inhibens_T5/T5db -query /dfs/Mueller_Lab/RSM/pbx/B11/comp_genome/B11_region3_1/Epibacterium_mobile_PBX_B11_region3_1.ffn -out /dfs/Mueller_Lab/mk/comp_genome/Phaeobacter_inhibens_T5/T5_vs_B11_3.1.out -outfmt 6
+
+```
+
+It doth not
+
+Phaeobacter inhibens T5 photo
+```{r}
+Query <- read_dna_seg_from_file(file="~/Desktop/Comp_genome/Epibacterium_mobile_PBX_B11_ctg3.gbk", fileType="genbank", tagsToParse="CDS", gene_type="arrows")
+Ref <- read_dna_seg_from_file(file="~/Desktop/P_inhibens/Phaeobacter_inhibens_T5/Phaeobacter_inhibens_T5_2.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/P_inhibens/Phaeobacter_inhibens_T5/T5_vs_B11_3.1.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(40000,105000)), dna_seg_scale=TRUE, main = "Region 3.1: E. mobile B11 vs. P. inhibens T5", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+```
+FOR ASLO PRESENTATION
+```{r}
+Query <- read_dna_seg_from_file(file="~/Desktop/Comp_genome/Epibacterium_mobile_PBX_B11_ctg3.gbk", fileType="genbank", tagsToParse="CDS", gene_type="arrows")
+Ref <- read_dna_seg_from_file(file="~/Desktop/P_inhibens/Phaeobacter_inhibens_T5/Phaeobacter_inhibens_T5_2.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/P_inhibens/Phaeobacter_inhibens_T5/T5_vs_B11_3.1.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(40000,105000)), dna_seg_scale=TRUE, main = "Region 3.1: Epibacterium B11 vs. P. inhibens T5", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+
+Query <- read_dna_seg_from_file(file="~/Desktop/Comp_genome/Epibacterium_mobile_PBX_B11_ctg3.gbk", fileType="genbank", tagsToParse="CDS", gene_type="arrows")
+Ref <- read_dna_seg_from_file(file="~/Desktop/Comp_genome/Epibacterium_mobile_F1926/Epibacterium_mobile_F1926_2.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Comp_genome/Epibacterium_mobile_F1926/B11_region3_1_v_Epibacterium_mobile_F1926.adj")
+
+#set xlims based on m8 BLAST max/mins (defined in coordinate_info.txt file created above)
+# against E mobile F1926
+pdf(file = "testmap.pdf")
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(2416000,2482000)), dna_seg_scale=TRUE, main = "Region 3.1: Epibacterium B11 vs. Epibacterium X", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+
+#F2368
+Ref <- read_dna_seg_from_file(file="~/Desktop/Comp_genome/Epibacterium_mobile_F2368/Epibacterium_mobile_F2368_13.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Comp_genome/Epibacterium_mobile_F2368/B11_region3_1_v_Epibacterium_mobile_F2368.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(131147, 208312)), dna_seg_scale=TRUE, main = "Region 3.1: Epibacterium B11 vs. Epibacterium Y", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1"))
+
+#F3329
+Ref <- read_dna_seg_from_file(file="~/Desktop/Comp_genome/Epibacterium_mobile_F3329/Epibacterium_mobile_F3329_16.gb", fileType="detect", tagsToParse="CDS", gene_type="arrows")
+comparison <- read_comparison_from_blast(file="~/Desktop/Comp_genome/Epibacterium_mobile_F3329/B11_region3_1_v_Epibacterium_mobile_F3329.adj")
+
+plot_gene_map(dna_segs=list(Query, Ref), comparisons=list(comparison), xlims=list(c(165000,230800), c(139332, 208502)), dna_seg_scale=TRUE, main = "Region 3.1: Epibacterium B11 vs. Epibacterium Z", seg_plot_height = 0.1, global_color_scheme=c("per_id", "auto", "red_blue", "1")) 
+```
+TDA BLAST OCTOBER 2024
+```{bash}
+cd /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/tda_search
+makeblastdb -in /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/tda_search/tm1040_da_genes.fa -dbtype nucl -out tm1040_tda_db
+hqsub 'blastn -db /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/tda_search/tm1040_tda_db -query /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/b11_contigs_nonredundant.fa -out /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/tda_search/b11_vs_tm1040.out -outfmt 6' -q micro -p 30 -r b11_tda_blastn
+```
+
+Need to concatenate all 4 B11 contigs into one sequence for Island Viewer. Did so using geneious. Now need to bakta annotate these to create an embl file for Island Viewer.
+```{bash}
+# nano b11_bakta.sh
+#!/bin/bash
+cd /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/islandviewer
+export BAKTA_DB=/nfs1/CGRB/databases/bakta/latest
+source /local/cluster/conda-envs/envs/bakta/activate.sh
+/local/cluster/bin/bakta --prefix b11_all --keep-contig-headers --genus Tritonibacter --output /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/islandviewer/annots --force  --threads 20 /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/islandviewer/B11_all_cat.fna
+
+hqsub '/nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/islandviewer/b11_bakta.sh' -q makaira -p 20 -r b11_bakta
+```
+Conversion of B11 gbff to gbk for islandviewer.
+nano gbff_to_gbk.py - note, DOES NOT WORK ON WILDWOOD CLUSTER
+```{python}
+#!/usr/bin/env python
+import sys
+#add path to biopython
+sys.path.append("/local/cluster/biopython-1.58")
+
+from Bio import SeqIO
+from Bio.Alphabet import generic_dna
+
+with open("b11.ffn", "r") as input_handle, open("b11.gbk", "w") as output_handle:
+  sequences = SeqIO.parse(input_handle, "fasta")
+  records = list(sequences)
+  for i in range(len(records)):
+    records[i].annotations["molecule_type"] = "DNA"
+    records[i].seq.alphabet = generic_dna
+  count = SeqIO.write(records, output_handle, "genbank")
+
+  print("Converted %i records" % count)
+```
+
+B11 gene map of TDA-producing genes. This will be two different maps since the genes are on different clusters.
+```{r}
+library(geneviewer)
+b11_tda <- read.csv("~/Documents/Oyster_Project/genomes/b11/tda_annotations.csv", header = T)
+
+# subsetting out plasmid genes, for now
+b11_tda <- b11_tda[c(4:12),]
+
+GC_chart(b11_tda, group = "gene.role", style = list(backgroundColor = "white"), height = "250px") %>%
+  #GC_color(colorScheme = "schemeSet1")%>%
+  GC_color(customColors = list('DNA-binding transcriptional regulator' = "#440154",
+                               'glutathionone S-transferase' = "#414487",
+                               'prephenate dehydratase' = "#2a788e",
+                               'acyl-CoA thioesterase' = "#22a884",
+                               'acyl-CoA dehydrogenase' = "#7ad151",
+                               'decarboxylase' = "#fde725",
+                               'TDA resistance; transmembrane protein' = "#808080",
+                               'TDA resistance; Zn-dependent endopeptidase' = "#808080",
+                               'TDA resistance; gamma-glutamyl cyclotransferase' = "#808080"))%>%
+  GC_scale(
+    start =73000,
+    end = 85000,
+    ticksCount = 8, hidden = FALSE
+  ) %>%
+  GC_labels(label = "gene", style = list(fontWeight = "bold"), rotate = -15, adjustLabels = FALSE, fontStyle = "normal", textAnchor = "middle")%>%
+ # GC_labels(label = "gene", fontStyle = "normal", textAnchor = "left", style = list(fontWeight = "bold"), itemStyle = list(list(index = 2, y = 60)))%>%
+  GC_title(title = "TDA biosynthesis genes")
+
+# now with the plasmid genes
+b11_tda <- read.csv("~/Documents/Oyster_Project/genomes/b11/tda_annotations.csv", header = T)
+
+GC_chart(b11_tda, group = "gene.role", style = list(backgroundColor = "white"), height = "23px")%>%
+    GC_color(customColors = list('DNA-binding transcriptional regulator' = "#440154",
+                               'glutathionone S-transferase' = "#414487",
+                               'prephenate dehydratase' = "#2a788e",
+                               'acyl-CoA thioesterase' = "#22a884",
+                               'acyl-CoA dehydrogenase' = "#7ad151",
+                               'decarboxylase' = "#fde725",
+                               'plasmid replication protein' = "#f1605d",
+                               'plasmid partitioning protein' = "#feb078",
+                               'TDA resistance; transmembrane protein' = "#808080",
+                               'TDA resistance; Zn-dependent endopeptidase' = "#808080",
+                               'TDA resistance; gamma-glutamyl cyclotransferase' = "#808080"))%>%
+  GC_scale(
+    start =69000,
+    end = 85000,
+    ticksCount = 8, hidden = FALSE
+  )%>%
+  GC_labels(label = "gene", style = list(fontWeight = "bold"), rotate = -15, adjustLabels = FALSE, fontStyle = "normal", textAnchor = "middle")%>%
+  GC_labels(label = "gene", fontStyle = "normal", textAnchor = "left", style = list(fontWeight = "bold"), itemStyle = list(list(index = 5, y = 65), list(index = 8, y = 65), list(index = 9, y = 50), list(index = 10, y = 65)))%>%
+  GC_title(title = "TDA biosynthesis genes & repABC operon on chromosome 4")
+```
+
+Making a diagram of the Lab work/ genetics/ MS data triangle.
+```{r}
+x <- c(0,2,4)
+y <- c(0,3.46,0)
+df <- cbind(x,y)
+ggplot(df, aes(x = x, y = y))+geom_polygon(color = "#DC4405", fill = "white")+
+  annotate("text", x = 0, y = 0, label = "Genome")+
+  annotate("text", x = 2, y = 4, label = "Mass spec.")+
+  annotate("text", x = 4, y = 0, label = "Coculture assays")+
+  scale_x_continuous(limits = c(0, 10))+
+  theme_bw()+
+  theme(
+    plot.background = element_blank(),
+    panel.grid.major = element_blank(),
+    panel.grid.minor = element_blank(),
+    panel.border = element_blank(),
+    axis.title = element_text(size = 0),
+    axis.ticks = element_line(linewidth = 0),
+    axis.text = element_text(size = 0)
+  )
+```
+
+
+
+
+Get_homologues
+```{bash}
+# start VPN
+ssh englimar@hpc.cqls.oregonstate.edu
+cd /nfs5/Mueller_Lab/oyster_probiotics/genomes/b11_comp
+
+```
+
+In a search for quorum sensing genes in B11, looking for luxI and luxR homologs.
+luxI: https://www.ebi.ac.uk/interpro/entry/pfam/PF00765/
+```{bash}
+cd /nfs5/Mueller_Lab/oyster_probiotics/genomes/b11_comp
+#clustalo -i ampR.faa -o ampR.align.faa
+#/local/cluster/hmmer/bin/hmmbuild ampR.hmm ampR.align.faa
+/local/cluster/hmmer/bin/hmmsearch --tblout luxI_b11.out luxI.hmm /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/annotation/annots/b11.faa
+```
+3 significant hits, one of which is annotated as N-acyl-homoserine lactone synthase LasI (autoinducer biosynthesis).
+
+Now with luxR: https://www.ebi.ac.uk/interpro/entry/pfam/PF00196/logo/
+```{bash}
+cd /nfs5/Mueller_Lab/oyster_probiotics/genomes/b11_comp
+/local/cluster/hmmer/bin/hmmsearch --tblout luxR_b11.out luxR.hmm /nfs5/Mueller_Lab/mk/oyster_probiotics/pacbio/5615/ccs.Q20/demultiplexed/b11/annotation/annots/b11.faa
+```
